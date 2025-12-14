@@ -58,7 +58,8 @@ export const TradingMetrics = () => {
       className={cn(
         "w-full bg-transparent flex flex-row items-center justify-center flex-wrap",
         "gap-4 md:gap-12 lg:gap-20",
-        "mt-8 pb-12 md:pb-8"
+        "mt-8 pb-12 md:pb-8",
+        "-mx-4 px-4 md:mx-0 md:px-0"
       )}
     >
       {metrics.map((metric, index) => (
