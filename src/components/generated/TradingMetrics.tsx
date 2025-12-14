@@ -20,7 +20,7 @@ const MetricItem = ({
           {label}
           <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 opacity-70 group-hover:opacity-100 transition-opacity" />
         </span>
-        <div className="text-[22px] sm:text-[40px] font-medium tracking-tight text-foreground transition-colors duration-180 group-active:text-foreground/80 leading-none">
+        <div className="text-[24px] sm:text-[40px] font-medium tracking-tight text-foreground transition-colors duration-180 group-active:text-foreground/80 leading-none">
           {value}
         </div>
       </a>;
@@ -29,7 +29,7 @@ const MetricItem = ({
       <span className="text-xs sm:text-sm text-slate-400 whitespace-nowrap">
         {label}
       </span>
-      <div className="text-[22px] sm:text-[32px] md:text-[36px] font-medium tracking-tight text-foreground leading-none">
+      <div className="text-[24px] sm:text-[32px] md:text-[36px] font-medium tracking-tight text-foreground leading-none">
         {value}
       </div>
     </div>;
