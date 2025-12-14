@@ -6,8 +6,16 @@
 [build.environment]
   NETLIFY_NEXT_PLUGIN_SKIP = "true"
 
-# Redirect rules for SPA routing (if needed)
+# Redirect /trading to /trading.html (optional, for cleaner URLs)
 [[redirects]]
   from = "/trading"
   to = "/trading.html"
   status = 200
+
+# Ensure HTML files are served with correct content type
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
