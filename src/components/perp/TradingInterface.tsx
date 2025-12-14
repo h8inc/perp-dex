@@ -387,13 +387,14 @@ const BottomPanel = ({
 // @component: TradingInterface
 export const TradingInterface = () => {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
 
   // @return
   return <div className="flex flex-col h-screen w-full bg-[#0b0e11] text-white overflow-hidden font-sans selection:bg-[#00ff9d]/30">
       <Header isWalletConnected={isWalletConnected} onConnect={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
       <MarketTicker />
       
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
         {/* Left Column: Chart & Bottom Panel */}
         <div className="flex flex-1 flex-col min-w-0">
           <ChartSection />
@@ -401,14 +402,26 @@ export const TradingInterface = () => {
         </div>
 
         {/* Middle Column: Order Book */}
-        <div className="hidden lg:block border-l border-white/10">
+        <div className="hidden lg:block border-l border-white/10 w-[280px] shrink-0">
           <OrderBook />
         </div>
 
         {/* Right Column: Order Entry */}
-        <div className="border-l border-white/10 bg-[#0b0e11] overflow-y-auto">
+        <div className="hidden lg:block border-l border-white/10 bg-[#0b0e11] overflow-y-auto lg:flex-[0.32] lg:min-w-[360px] lg:max-w-[520px]">
           <TradingBox isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
         </div>
+      </div>
+
+      {/* Mobile bottom sheet for TradingBox */}
+      <div className="fixed inset-x-0 bottom-0 z-50 lg:hidden">
+        <TradingBox
+          isMobileSheet
+          isSheetOpen={isMobileSheetOpen}
+          onToggleSheet={() => setIsMobileSheetOpen(o => !o)}
+          isWalletConnected={isWalletConnected}
+          onConnectWallet={() => setIsWalletConnected(true)}
+          onDisconnect={() => setIsWalletConnected(false)}
+        />
       </div>
     </div>;
 };

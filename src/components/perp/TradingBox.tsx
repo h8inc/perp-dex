@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ChevronDown, Settings, Info, ArrowDown, X, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp, Settings, Info, ArrowDown, X, Search } from 'lucide-react';
 import { getTokenIcon } from './TokenIcons';
 
 // Available tokens
@@ -98,12 +98,18 @@ type TradingBoxProps = {
   isWalletConnected?: boolean;
   onConnectWallet?: () => void;
   onDisconnect?: () => void;
+  isMobileSheet?: boolean;
+  isSheetOpen?: boolean;
+  onToggleSheet?: () => void;
 };
 
 export const TradingBox = ({
   isWalletConnected = false,
   onConnectWallet,
-  onDisconnect
+  onDisconnect,
+  isMobileSheet = false,
+  isSheetOpen = true,
+  onToggleSheet
 }: TradingBoxProps) => {
   const [activeTab, setActiveTab] = useState<'Long' | 'Short' | 'Swap'>('Long');
   const [orderType, setOrderType] = useState<'Market' | 'Limit' | 'TWAP' | 'TPSL' | 'StopMarket'>('Market');
@@ -223,20 +229,29 @@ export const TradingBox = ({
     };
   }, [isDraggingLeverage, updateLeverageFromPosition]);
 
+  const sheetWrapperClass = isMobileSheet
+    ? 'w-full bg-[#0b0e11] border-t border-white/10 font-sans antialiased shadow-2xl transition-transform duration-300'
+    : 'flex w-full items-start justify-center bg-[#0b0e11] font-sans antialiased h-full';
+
   // @return
-  return <div className="flex w-full items-start justify-center bg-[#0b0e11] font-sans antialiased h-full" style={{
-    paddingLeft: "0px",
-    paddingRight: "0px",
-    paddingTop: "0px",
-    paddingBottom: "0px"
-  }}>
-      <div className="w-full max-w-[420px] shrink-0 rounded-xl bg-[#0b0e11] border border-white/10" style={{
+  const sheetWrapperStyle = isMobileSheet
+    ? { transform: isSheetOpen ? 'translateY(0)' : 'translateY(calc(100% - 56px))' }
+    : {
+        paddingLeft: "0px",
+        paddingRight: "0px",
+        paddingTop: "0px",
+        paddingBottom: "0px"
+      };
+
+  return (
+    <div className={sheetWrapperClass} style={sheetWrapperStyle}>
+      <div className={`${isMobileSheet ? 'w-full max-w-full rounded-t-[16px]' : 'w-full max-w-[420px] rounded-xl'} shrink-0 bg-[#0b0e11] border border-white/10`} style={{
       borderTopWidth: "0px",
       borderRightWidth: "0px",
       borderBottomWidth: "0px",
       borderLeftWidth: "0px",
       borderStyle: "none",
-      borderRadius: "14px"
+      borderRadius: isMobileSheet ? "16px 16px 0 0" : "14px"
     }}>
         
         {/* Header Tabs */}
@@ -247,16 +262,24 @@ export const TradingBox = ({
             <TabButton active={activeTab === 'Swap'} label="Swap" onClick={() => setActiveTab('Swap')} />
           </div>
           <div className="flex items-center px-4">
-             <button className="p-2 text-gray-400 hover:text-white transition-colors">
-               <ChevronDown className="h-4 w-4" />
+             <button
+               className="p-2 text-gray-400 hover:text-white transition-colors"
+               onClick={() => onToggleSheet && onToggleSheet()}
+               aria-label={isSheetOpen ? 'Collapse' : 'Expand'}
+             >
+               {isMobileSheet ? (
+                 isSheetOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />
+               ) : (
+                 <ChevronDown className="h-4 w-4" />
+               )}
              </button>
           </div>
         </div>
 
         {/* Form Content */}
         <div className="flex flex-col gap-1 p-4" style={{
-        width: "320px",
-        maxWidth: "320px"
+        width: "100%",
+        maxWidth: "100%"
       }}>
           
           {/* Sub Header: Order Type + Icons */}
@@ -587,5 +610,6 @@ export const TradingBox = ({
           </div>
         </div>
       )}
-    </div>;
+    </div>
+  );
 };
