@@ -225,13 +225,8 @@ export const TradingBox = ({
   }, [isDraggingLeverage, updateLeverageFromPosition]);
 
   // @return
-  return <div className="flex items-start justify-start bg-[#0b0e11] font-sans antialiased h-full w-full" style={{
-    paddingLeft: "0px",
-    paddingRight: "0px",
-    paddingTop: "0px",
-    paddingBottom: "0px"
-  }}>
-      <div className="w-full max-w-[440px] shrink-0 rounded-xl bg-[#0b0e11] border border-white/10" style={{
+  return <>
+      <div className="w-full max-w-[440px] shrink-0 rounded-xl bg-[#0b0e11] border border-white/10 font-sans antialiased h-full" style={{
       borderTopWidth: "0px",
       borderRightWidth: "0px",
       borderBottomWidth: "0px",
@@ -588,5 +583,5 @@ export const TradingBox = ({
           </div>
         </div>
       )}
-    </div>;
+    </>;
 };
