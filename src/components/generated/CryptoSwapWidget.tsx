@@ -84,7 +84,7 @@ export const CryptoSwapWidget = () => {
     setSellAmount((balance * pct).toFixed(5));
   };
   const hasAmount = sellAmount && parseFloat(sellAmount) > 0;
-  return <div className="relative min-h-screen w-full flex flex-col items-center justify-center p-4 gap-8 bg-[#1D1D1D] overflow-hidden text-white font-['Inter']">
+  return <div className="relative min-h-screen w-full flex flex-col items-center justify-start md:justify-center px-4 pt-6 pb-12 gap-8 bg-[#1D1D1D] overflow-hidden text-white font-['Inter']">
       
       <BackgroundGlyphs />
 
