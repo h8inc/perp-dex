@@ -231,7 +231,7 @@ export const TradingBox = ({
     paddingTop: "0px",
     paddingBottom: "0px"
   }}>
-      <div className="w-full max-w-[420px] shrink-0 rounded-xl bg-[#0b0e11] border border-white/10" style={{
+      <div className="w-full max-w-[462px] shrink-0 rounded-xl bg-[#0b0e11] border border-white/10" style={{
       borderTopWidth: "0px",
       borderRightWidth: "0px",
       borderBottomWidth: "0px",
@@ -256,8 +256,8 @@ export const TradingBox = ({
 
         {/* Form Content */}
         <div className="flex flex-col gap-1 p-4" style={{
-        width: "320px",
-        maxWidth: "320px"
+        width: "100%",
+        maxWidth: "100%"
       }}>
           
           {/* Sub Header: Order Type + Icons */}

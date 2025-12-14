@@ -395,7 +395,7 @@ export const TradingInterface = () => {
       
       <div className="flex flex-1 overflow-hidden">
         {/* Left Column: Chart & Bottom Panel */}
-        <div className="flex flex-1 flex-col min-w-0">
+        <div className="flex flex-[0.6] flex-col min-w-0">
           <ChartSection />
           <BottomPanel isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} />
         </div>
@@ -406,7 +406,7 @@ export const TradingInterface = () => {
         </div>
 
         {/* Right Column: Order Entry */}
-        <div className="border-l border-white/10 bg-[#0b0e11] overflow-y-auto">
+        <div className="flex-[0.4] border-l border-white/10 bg-[#0b0e11] overflow-y-auto">
           <TradingBox isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
         </div>
       </div>
