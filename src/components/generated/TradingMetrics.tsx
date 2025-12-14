@@ -54,24 +54,22 @@ export const TradingMetrics = () => {
 
   // @return
   return (
-    <div className="w-full bg-transparent flex justify-center mt-8 px-4 pb-12 md:pb-8 -mx-4 md:mx-0">
-      <div
-        className={cn(
-          "flex flex-row items-center justify-center flex-wrap",
-          "gap-4 md:gap-12 lg:gap-20",
-          "w-full max-w-full px-4"
-        )}
-      >
-        {metrics.map((metric, index) => (
-          <MetricItem
-            key={index}
-            label={metric.label}
-            value={metric.value}
-            isInteractive={metric.isInteractive}
-            href={metric.href}
-          />
-        ))}
-      </div>
+    <div
+      className={cn(
+        "w-full bg-transparent flex flex-row items-center justify-center flex-wrap",
+        "gap-4 md:gap-12 lg:gap-20",
+        "mt-8 pb-12 md:pb-8"
+      )}
+    >
+      {metrics.map((metric, index) => (
+        <MetricItem
+          key={index}
+          label={metric.label}
+          value={metric.value}
+          isInteractive={metric.isInteractive}
+          href={metric.href}
+        />
+      ))}
     </div>
   );
 };
