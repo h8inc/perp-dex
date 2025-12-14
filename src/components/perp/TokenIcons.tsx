@@ -1,11 +1,13 @@
 import React from 'react';
 
-// Bitcoin Icon
+// Bitcoin Icon - Official Bitcoin logo with proper ₿ symbol paths
 export const BitcoinIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`rounded-full bg-[#f7931a] ${className}`}>
-    <path d="M16.5 14.5C16.5 14.5 18 13.5 18 11.5C18 9.5 16.5 8.5 15.5 8.5H12V16.5H15.5C16.5 16.5 16.5 14.5 16.5 14.5Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M12 8.5V4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M12 16.5V20.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`rounded-full ${className}`}>
+    <circle cx="12" cy="12" r="12" fill="#F7931A" />
+    {/* Bitcoin symbol paths */}
+    <path d="M9.5 7.5h2.5c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5h-2.5V7.5zm0 4h2.5c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5h-2.5v-5z" fill="white" />
+    <path d="M8.5 7.5h1v9h-1v-9zm6 0h1v9h-1v-9z" fill="white" />
+    <path d="M10.5 10.5h3v1h-3v-1zm0 2h3v1h-3v-1z" fill="#F7931A" />
   </svg>
 );
 
