@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ChevronDown, Settings, Info, ArrowDown, X, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp, Settings, Info, ArrowDown, X, Search } from 'lucide-react';
 import { getTokenIcon } from './TokenIcons';
 
 // Available tokens
@@ -99,12 +99,18 @@ type TradingBoxProps = {
   isWalletConnected?: boolean;
   onConnectWallet?: () => void;
   onDisconnect?: () => void;
+  isMobileSheet?: boolean;
+  isSheetOpen?: boolean;
+  onToggleSheet?: () => void;
 };
 
 export const TradingBox = ({
   isWalletConnected = false,
   onConnectWallet,
-  onDisconnect
+  onDisconnect,
+  isMobileSheet = false,
+  isSheetOpen = true,
+  onToggleSheet
 }: TradingBoxProps) => {
   const [activeTab, setActiveTab] = useState<'Long' | 'Short' | 'Swap'>('Long');
   const [orderType, setOrderType] = useState<'Market' | 'Limit' | 'TWAP' | 'TPSL' | 'StopMarket'>('Market');
@@ -224,15 +230,21 @@ export const TradingBox = ({
     };
   }, [isDraggingLeverage, updateLeverageFromPosition]);
 
+  const sheetWrapperClass = isMobileSheet
+    ? `w-full bg-[#0b0e11] border-t border-white/10 font-sans antialiased shadow-2xl transition-transform duration-300 ${
+        isSheetOpen ? 'translate-y-0' : 'translate-y-[calc(100%-56px)]'
+      }`
+    : 'w-full rounded-xl bg-[#0b0e11] border border-white/10 font-sans antialiased h-full';
+
   // @return
   return <>
-      <div className="w-full rounded-xl bg-[#0b0e11] border border-white/10 font-sans antialiased h-full" style={{
-      borderTopWidth: "0px",
-      borderRightWidth: "0px",
-      borderBottomWidth: "0px",
-      borderLeftWidth: "0px",
-      borderStyle: "none",
-      borderRadius: "14px"
+      <div className={sheetWrapperClass} style={{
+      borderTopWidth: isMobileSheet ? undefined : "0px",
+      borderRightWidth: isMobileSheet ? undefined : "0px",
+      borderBottomWidth: isMobileSheet ? undefined : "0px",
+      borderLeftWidth: isMobileSheet ? undefined : "0px",
+      borderStyle: isMobileSheet ? undefined : "none",
+      borderRadius: isMobileSheet ? "16px 16px 0 0" : "14px"
     }}>
         
         {/* Header Tabs */}
@@ -243,8 +255,16 @@ export const TradingBox = ({
             <TabButton active={activeTab === 'Swap'} label="Swap" onClick={() => setActiveTab('Swap')} />
           </div>
           <div className="flex items-center px-4">
-             <button className="p-2 text-gray-400 hover:text-white transition-colors">
-               <ChevronDown className="h-4 w-4" />
+             <button
+               className="p-2 text-gray-400 hover:text-white transition-colors"
+               onClick={() => onToggleSheet && onToggleSheet()}
+               aria-label={isSheetOpen ? 'Collapse' : 'Expand'}
+             >
+               {isMobileSheet ? (
+                 isSheetOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />
+               ) : (
+                 <ChevronDown className="h-4 w-4" />
+               )}
              </button>
           </div>
         </div>
