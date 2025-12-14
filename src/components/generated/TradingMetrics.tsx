@@ -29,7 +29,7 @@ const MetricItem = ({
       <span className="text-xs sm:text-sm text-slate-400 whitespace-nowrap">
         {label}
       </span>
-      <div className="text-[22px] sm:text-[40px] font-medium tracking-tight text-foreground leading-none">
+      <div className="text-[22px] sm:text-[32px] md:text-[36px] font-medium tracking-tight text-foreground leading-none">
         {value}
       </div>
     </div>;
@@ -53,15 +53,26 @@ export const TradingMetrics = () => {
   }] as any[];
 
   // @return
-  return <div className="w-full bg-transparent flex justify-center mt-8 px-4">
+  return (
+    <div className="w-full bg-transparent flex justify-center mt-8 px-4">
       <div
         className={cn(
-          "flex w-full flex-row flex-wrap items-start justify-between",
-          "gap-4 sm:gap-6 md:gap-10",
-          "max-w-3xl"
+          "grid w-full items-start",
+          "grid-cols-1 sm:grid-cols-3",
+          "gap-4 sm:gap-6 md:gap-8",
+          "max-w-4xl"
         )}
       >
-        {metrics.map((metric, index) => <MetricItem key={index} label={metric.label} value={metric.value} isInteractive={metric.isInteractive} href={metric.href} />)}
+        {metrics.map((metric, index) => (
+          <MetricItem
+            key={index}
+            label={metric.label}
+            value={metric.value}
+            isInteractive={metric.isInteractive}
+            href={metric.href}
+          />
+        ))}
       </div>
-    </div>;
+    </div>
+  );
 };
