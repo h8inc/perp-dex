@@ -387,16 +387,15 @@ const BottomPanel = ({
 // @component: TradingInterface
 export const TradingInterface = () => {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
 
   // @return
   return <div className="flex flex-col h-screen w-full bg-[#0b0e11] text-white overflow-hidden font-sans selection:bg-[#00ff9d]/30">
       <Header isWalletConnected={isWalletConnected} onConnect={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
       <MarketTicker />
       
-      <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
+      <div className="flex flex-1 overflow-hidden">
         {/* Left Column: Chart & Bottom Panel */}
-        <div className="flex w-full lg:flex-[0.7] flex-col min-w-0">
+        <div className="flex flex-1 flex-col min-w-0">
           <ChartSection />
           <BottomPanel isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} />
         </div>
@@ -407,21 +406,9 @@ export const TradingInterface = () => {
         </div>
 
         {/* Right Column: Order Entry */}
-        <div className="hidden lg:block lg:flex-[0.3] lg:min-w-[360px] lg:max-w-[520px] border-l border-white/10 bg-[#0b0e11] overflow-y-auto">
+        <div className="border-l border-white/10 bg-[#0b0e11] overflow-y-auto">
           <TradingBox isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
         </div>
-      </div>
-
-      {/* Mobile bottom sheet for TradingBox */}
-      <div className="fixed inset-x-0 bottom-0 z-50 lg:hidden">
-        <TradingBox
-          isMobileSheet
-          isSheetOpen={isMobileSheetOpen}
-          onToggleSheet={() => setIsMobileSheetOpen(o => !o)}
-          isWalletConnected={isWalletConnected}
-          onConnectWallet={() => setIsWalletConnected(true)}
-          onDisconnect={() => setIsWalletConnected(false)}
-        />
       </div>
     </div>;
 };

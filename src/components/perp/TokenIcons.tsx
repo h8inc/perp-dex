@@ -1,88 +1,52 @@
 import React from 'react';
 
-// Token icon URLs matching CryptoSwapWidget
-const BTC_ICON_URL = "https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png?v=026";
-const ETH_ICON_URL = "https://token-icons.s3.amazonaws.com/eth.png";
-const USDC_ICON_URL = "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=026";
-const USDT_ICON_URL = "https://cryptologos.cc/logos/tether-usdt-logo.png?v=026";
-const SOL_ICON_URL = "https://cryptologos.cc/logos/solana-sol-logo.png?v=026";
-
-// Bitcoin Icon - Using image URL from CryptoSwapWidget (same as WBTC)
+// Bitcoin Icon
 export const BitcoinIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
-  <img 
-    src={BTC_ICON_URL} 
-    alt="BTC" 
-    className={`rounded-full ${className}`}
-    style={{ width: size, height: size }}
-    onError={(e) => {
-      (e.target as HTMLImageElement).src = "https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png?v=026";
-    }}
-  />
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`rounded-full bg-[#f7931a] ${className}`}>
+    <path d="M16.5 14.5C16.5 14.5 18 13.5 18 11.5C18 9.5 16.5 8.5 15.5 8.5H12V16.5H15.5C16.5 16.5 16.5 14.5 16.5 14.5Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M12 8.5V4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M12 16.5V20.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
 );
 
-// Ethereum Icon - Using image URL from CryptoSwapWidget
+// Ethereum Icon
 export const EthereumIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
-  <img 
-    src={ETH_ICON_URL} 
-    alt="ETH" 
-    className={`rounded-full ${className}`}
-    style={{ width: size, height: size }}
-    onError={(e) => {
-      (e.target as HTMLImageElement).src = "https://token-icons.s3.amazonaws.com/eth.png";
-    }}
-  />
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`rounded-full bg-[#627EEA] ${className}`}>
+    <path d="M12 2L5 12L12 16L19 12L12 2Z" fill="white" />
+    <path d="M5 12L12 16L12 22L5 17V12Z" fill="white" opacity="0.6" />
+    <path d="M19 12L12 16L12 22L19 17V12Z" fill="white" opacity="0.6" />
+  </svg>
 );
 
-// USDC Icon - Using image URL from CryptoSwapWidget
+// USDC Icon
 export const USDCIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
-  <img 
-    src={USDC_ICON_URL} 
-    alt="USDC" 
-    className={`rounded-full ${className}`}
-    style={{ width: size, height: size }}
-    onError={(e) => {
-      (e.target as HTMLImageElement).src = "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=026";
-    }}
-  />
+  <div className={`flex items-center justify-center rounded-full bg-[#2775ca] font-bold text-white ${className}`} style={{ width: size, height: size, fontSize: size * 0.45 }}>
+    $
+  </div>
 );
 
-// Wrapped Bitcoin Icon - Uses same image URL as Bitcoin
-export const WBTCIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
-  <img 
-    src={BTC_ICON_URL} 
-    alt="WBTC" 
-    className={`rounded-full ${className}`}
-    style={{ width: size, height: size }}
-    onError={(e) => {
-      (e.target as HTMLImageElement).src = "https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png?v=026";
-    }}
-  />
-);
-
-// USDT Icon - Using image URL from CryptoSwapWidget
+// USDT Icon
 export const USDTIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
-  <img 
-    src={USDT_ICON_URL} 
-    alt="USDT" 
-    className={`rounded-full ${className}`}
-    style={{ width: size, height: size }}
-    onError={(e) => {
-      (e.target as HTMLImageElement).src = "https://cryptologos.cc/logos/tether-usdt-logo.png?v=026";
-    }}
-  />
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`rounded-full bg-[#26a17b] ${className}`}>
+    <circle cx="12" cy="12" r="12" fill="#26a17b" />
+    <path d="M12 4.5C7.5 4.5 4 7.5 4 12C4 16.5 7.5 19.5 12 19.5C16.5 19.5 20 16.5 20 12C20 7.5 16.5 4.5 12 4.5ZM12 18C9 18 6.5 15.5 6.5 12.5C6.5 9.5 9 7 12 7C15 7 17.5 9.5 17.5 12.5C17.5 15.5 15 18 12 18Z" fill="white" />
+    <path d="M9 10.5H15V11.5H9V10.5Z" fill="white" />
+    <path d="M9 12.5H15V13.5H9V12.5Z" fill="white" />
+  </svg>
 );
 
-// Solana Icon - Using image URL from CryptoSwapWidget
+// Solana Icon
 export const SolanaIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
-  <img 
-    src={SOL_ICON_URL} 
-    alt="SOL" 
-    className={`rounded-full ${className}`}
-    style={{ width: size, height: size }}
-    onError={(e) => {
-      (e.target as HTMLImageElement).src = "https://cryptologos.cc/logos/solana-sol-logo.png?v=026";
-    }}
-  />
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`rounded-full bg-gradient-to-br from-[#14F195] to-[#9945FF] ${className}`}>
+    <circle cx="12" cy="12" r="12" fill="url(#sol-gradient)" />
+    <defs>
+      <linearGradient id="sol-gradient" x1="0" y1="0" x2="24" y2="24">
+        <stop offset="0%" stopColor="#14F195" />
+        <stop offset="100%" stopColor="#9945FF" />
+      </linearGradient>
+    </defs>
+    <path d="M7.5 7.5L16.5 7.5L7.5 16.5L16.5 16.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
 );
 
 // Token icon mapper
@@ -91,11 +55,9 @@ export const getTokenIcon = (symbol: string, size = 24, className = '') => {
   
   switch (normalizedSymbol) {
     case 'BTC':
-      return <BitcoinIcon size={size} className={className} />;
     case 'WBTC':
-      return <WBTCIcon size={size} className={className} />;
+      return <BitcoinIcon size={size} className={className} />;
     case 'ETH':
-      return <EthereumIcon size={size} className={className} />;
     case 'WETH':
       return <EthereumIcon size={size} className={className} />;
     case 'USDC':

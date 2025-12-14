@@ -26,20 +26,16 @@ function App() {
 
   if (container === 'centered') {
     return (
-      <div className="min-h-screen w-full flex flex-col items-center bg-[#0b0e11]">
+      <div className="h-full w-full flex flex-col items-center justify-center">
         <Header />
-        <main className="w-full flex flex-col items-center gap-8">
-          {generatedComponent}
-        </main>
+        {generatedComponent}
       </div>
     );
   } else {
     return (
       <>
         <Header />
-        <main className="w-full flex flex-col items-center gap-8">
-          {generatedComponent}
-        </main>
+        {generatedComponent}
       </>
     );
   }
