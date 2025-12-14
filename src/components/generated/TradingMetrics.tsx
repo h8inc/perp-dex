@@ -53,16 +53,14 @@ export const TradingMetrics = () => {
   }] as any[];
 
   // @return
-  return <div className="w-full bg-transparent flex mt-8" style={{
-    width: "896px",
-    maxWidth: "896px",
-    justifyContent: "center",
-    alignItems: "flex-start"
-  }}>
-      <div className={cn("flex w-full flex-row flex-wrap items-start justify-between h-8", "gap-4 sm:gap-[60px]")} style={{
-      width: "560px",
-      maxWidth: "560px"
-    }}>
+  return <div className="w-full bg-transparent flex justify-center mt-8 px-4">
+      <div
+        className={cn(
+          "flex w-full flex-row flex-wrap items-start justify-between",
+          "gap-4 sm:gap-8",
+          "max-w-3xl"
+        )}
+      >
         {metrics.map((metric, index) => <MetricItem key={index} label={metric.label} value={metric.value} isInteractive={metric.isInteractive} href={metric.href} />)}
       </div>
     </div>;
