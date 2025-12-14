@@ -1,16 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronDown, Settings, Info, ArrowDown } from 'lucide-react';
-
-// --- Icons ---
-
-const BitcoinIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="rounded-full bg-[#f7931a]">
-    <path d="M16.5 14.5C16.5 14.5 18 13.5 18 11.5C18 9.5 16.5 8.5 15.5 8.5H12V16.5H15.5C16.5 16.5 16.5 14.5 16.5 14.5Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M12 8.5V4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M12 16.5V20.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>;
-const USDCIcon = () => <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#2775ca] text-[11px] font-bold text-white">
-    $
-  </div>;
+import { BitcoinIcon, USDCIcon } from './TokenIcons';
 
 // --- Helper Components ---
 

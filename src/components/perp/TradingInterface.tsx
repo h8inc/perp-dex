@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine } from 'recharts';
-import { ChevronDown, Settings, Maximize2, Share2, Camera, Layout, Search, Bell, Menu, Wallet, ArrowUpDown, Plus, Minus, MoreHorizontal, Info, History, Clock, Bitcoin } from 'lucide-react';
+import { ChevronDown, Settings, Maximize2, Share2, Camera, Layout, Search, Bell, Menu, Wallet, ArrowUpDown, Plus, Minus, MoreHorizontal, Info, History, Clock } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { TradingBox } from './TradingBox';
+import { BitcoinIcon } from './TokenIcons';
 
 // --- Types & Mock Data ---
 
@@ -136,7 +137,7 @@ const Header = ({
 const MarketTicker = () => <div className="flex h-14 items-center gap-6 border-b border-white/10 bg-[#0b0e11] px-4 text-xs overflow-x-auto no-scrollbar">
     <div className="flex items-center gap-2 pr-4 border-r border-white/10 min-w-fit">
       <div className="flex items-center gap-1.5 cursor-pointer hover:bg-white/5 p-1 rounded">
-        <Bitcoin className="text-orange-500" size={20} />
+        <BitcoinIcon size={20} />
         <span className="text-base font-bold text-white">BTC / USD</span>
         <ChevronDown size={14} />
       </div>
