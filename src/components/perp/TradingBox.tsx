@@ -1,6 +1,17 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ChevronDown, Settings, Info, ArrowDown } from 'lucide-react';
-import { BitcoinIcon, USDCIcon } from './TokenIcons';
+import { ChevronDown, Settings, Info, ArrowDown, X, Search } from 'lucide-react';
+import { getTokenIcon } from './TokenIcons';
+
+// Available tokens
+const AVAILABLE_TOKENS = [
+  { symbol: 'BTC', name: 'Bitcoin' },
+  { symbol: 'ETH', name: 'Ethereum' },
+  { symbol: 'USDC', name: 'USD Coin' },
+  { symbol: 'USDT', name: 'Tether' },
+  { symbol: 'SOL', name: 'Solana' },
+] as const;
+
+type Token = typeof AVAILABLE_TOKENS[number];
 
 // --- Helper Components ---
 
@@ -27,8 +38,8 @@ const TokenInput = ({
   label,
   value,
   onChange,
-  tokenIcon: TokenIcon,
-  tokenSymbol,
+  token,
+  onTokenClick,
   subValue,
   balance,
   readOnly = false
@@ -36,8 +47,8 @@ const TokenInput = ({
   label: string;
   value: string;
   onChange?: (val: string) => void;
-  tokenIcon: React.ElementType;
-  tokenSymbol: string;
+  token: Token;
+  onTokenClick: () => void;
   subValue?: string;
   balance?: string;
   readOnly?: boolean;
@@ -53,9 +64,9 @@ const TokenInput = ({
             <span className="text-xs text-gray-400">Leverage:</span>
             <span className="text-xs text-gray-400">{subValue}</span>
           </div>}
-        <button className="flex items-center gap-2 rounded-full bg-white/5 py-1.5 pl-2 pr-3 hover:bg-white/10 transition-colors border border-transparent hover:border-white/10">
-          <TokenIcon />
-          <span className="text-base font-medium text-white">{tokenSymbol}</span>
+        <button onClick={onTokenClick} className="flex items-center gap-2 rounded-full bg-white/5 py-1.5 pl-2 pr-3 hover:bg-white/10 transition-colors border border-transparent hover:border-white/10 cursor-pointer">
+          {getTokenIcon(token.symbol, 24)}
+          <span className="text-base font-medium text-white">{token.symbol}</span>
           <ChevronDown className="h-4 w-4 text-gray-400" />
         </button>
       </div>
@@ -102,7 +113,22 @@ export const TradingBox = ({
   const [leverage, setLeverage] = useState(20);
   const [isExecDetailsOpen, setIsExecDetailsOpen] = useState(true);
   const [isDraggingLeverage, setIsDraggingLeverage] = useState(false);
+  const [payToken, setPayToken] = useState<Token>(AVAILABLE_TOKENS.find(t => t.symbol === 'USDC') || AVAILABLE_TOKENS[2]);
+  const [receiveToken, setReceiveToken] = useState<Token>(AVAILABLE_TOKENS.find(t => t.symbol === 'BTC') || AVAILABLE_TOKENS[0]);
+  const [isTokenSelectorOpen, setIsTokenSelectorOpen] = useState(false);
+  const [tokenSelectorFor, setTokenSelectorFor] = useState<'pay' | 'receive'>('pay');
+  const [tokenSearchQuery, setTokenSearchQuery] = useState('');
   const sliderRef = useRef<HTMLDivElement | null>(null);
+
+  const handleSelectToken = (token: Token) => {
+    if (tokenSelectorFor === 'pay') {
+      setPayToken(token);
+    } else {
+      setReceiveToken(token);
+    }
+    setIsTokenSelectorOpen(false);
+    setTokenSearchQuery('');
+  };
 
   // Marks for slider
   const marks = [{
@@ -281,7 +307,16 @@ export const TradingBox = ({
 
           {/* Inputs */}
           <div className="flex flex-col gap-1.5 relative">
-            <TokenInput label={isSwap ? "Pay" : "Pay"} value={payAmount} onChange={val => setPayAmount(val)} tokenIcon={USDCIcon} tokenSymbol="USDC" />
+            <TokenInput 
+              label={isSwap ? "Pay" : "Pay"} 
+              value={payAmount} 
+              onChange={val => setPayAmount(val)} 
+              token={payToken}
+              onTokenClick={() => {
+                setTokenSelectorFor('pay');
+                setIsTokenSelectorOpen(true);
+              }}
+            />
             
             {/* Swap Arrow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
@@ -290,7 +325,17 @@ export const TradingBox = ({
               </button>
             </div>
 
-            <TokenInput label={isSwap ? "Receive" : activeTab} value={longAmount} tokenIcon={BitcoinIcon} tokenSymbol="BTC" subValue={!isSwap ? `${clampedLeverage.toFixed(2)}x` : undefined} readOnly />
+            <TokenInput 
+              label={isSwap ? "Receive" : activeTab} 
+              value={longAmount} 
+              token={receiveToken}
+              onTokenClick={() => {
+                setTokenSelectorFor('receive');
+                setIsTokenSelectorOpen(true);
+              }}
+              subValue={!isSwap ? `${clampedLeverage.toFixed(2)}x` : undefined} 
+              readOnly 
+            />
 
             {orderType === 'Limit' && <div className="rounded-lg border border-white/10 bg-[#15191e] p-4 transition-colors hover:bg-[#1a1d26]">
                 <div className="mb-2 flex justify-between text-xs text-gray-400">
@@ -450,5 +495,97 @@ export const TradingBox = ({
 
         </div>
       </div>
+
+      {/* Token Selector Modal */}
+      {isTokenSelectorOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-300" 
+            onClick={() => {
+              setIsTokenSelectorOpen(false);
+              setTokenSearchQuery('');
+            }} 
+          />
+          
+          {/* Modal Content */}
+          <div className="relative w-[480px] max-w-full h-[600px] max-h-[90vh] bg-[#131313]/95 backdrop-blur-xl rounded-[24px] border border-white/10 flex flex-col shadow-2xl overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 pb-2 shrink-0">
+              <h3 className="text-white font-semibold text-lg">Select a token</h3>
+              <button 
+                onClick={() => {
+                  setIsTokenSelectorOpen(false);
+                  setTokenSearchQuery('');
+                }} 
+                className="p-1 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+              >
+                <X className="w-6 h-6 text-[#a0a0a0] hover:text-white" />
+              </button>
+            </div>
+
+            {/* Search Bar */}
+            <div className="px-4 pb-4 shrink-0">
+              <div className="relative group">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#a0a0a0] group-focus-within:text-[#00ff9d] transition-colors" />
+                <input 
+                  type="text" 
+                  placeholder="Search tokens" 
+                  value={tokenSearchQuery} 
+                  onChange={e => setTokenSearchQuery(e.target.value)} 
+                  className="w-full bg-[#1f1f1f] text-white placeholder-[#5d6785] rounded-xl pl-10 pr-10 py-3 outline-none border border-transparent focus:border-[#00ff9d]/50 transition-all text-base" 
+                />
+              </div>
+            </div>
+
+            {/* Scrollable Token List */}
+            <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2">
+              {/* Popular Tokens Grid */}
+              <div className="grid grid-cols-4 gap-2 mb-4">
+                {AVAILABLE_TOKENS.map(token => (
+                  <button 
+                    key={token.symbol} 
+                    onClick={() => handleSelectToken(token)}
+                    className="flex flex-col items-center justify-center gap-1.5 p-2 rounded-xl border border-white/5 bg-[#1f1f1f]/50 hover:bg-[#2d2d2d] transition-colors group cursor-pointer"
+                  >
+                    {getTokenIcon(token.symbol, 32)}
+                    <span className="text-xs font-medium text-white group-hover:text-white/90">{token.symbol}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Filtered Token List */}
+              <div className="space-y-1">
+                <div className="text-sm text-[#a0a0a0] font-medium mb-2 sticky top-0 bg-[#131313] py-2 z-10">
+                  All Tokens
+                </div>
+                
+                {AVAILABLE_TOKENS
+                  .filter(t => 
+                    t.name.toLowerCase().includes(tokenSearchQuery.toLowerCase()) || 
+                    t.symbol.toLowerCase().includes(tokenSearchQuery.toLowerCase())
+                  )
+                  .map(token => (
+                    <button 
+                      key={token.symbol} 
+                      onClick={() => handleSelectToken(token)} 
+                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group text-left cursor-pointer"
+                    >
+                      <div className="w-10 h-10 rounded-full overflow-hidden bg-[#2d2d2d] shrink-0 flex items-center justify-center">
+                        {getTokenIcon(token.symbol, 40)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-white font-medium text-base truncate">{token.name}</span>
+                          <span className="text-[#5d6785] text-xs font-medium bg-[#1f1f1f] px-1.5 py-0.5 rounded uppercase">{token.symbol}</span>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>;
 };
