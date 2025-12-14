@@ -407,7 +407,7 @@ export const TradingInterface = () => {
         </div>
 
         {/* Right Column: Order Entry */}
-        <div className="hidden lg:block lg:flex-[0.42] lg:min-w-[420px] lg:max-w-[560px] border-l border-white/10 bg-[#0b0e11] overflow-y-auto">
+        <div className="hidden lg:block lg:flex-[0.42] lg:min-w-[420px] lg:max-w-none border-l border-white/10 bg-[#0b0e11] overflow-y-auto">
           <TradingBox isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
         </div>
       </div>
