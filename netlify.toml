@@ -5,3 +5,9 @@
 # Explicitly prevent Next.js auto-detection
 [build.environment]
   NETLIFY_NEXT_PLUGIN_SKIP = "true"
+
+# Redirect rules for SPA routing (if needed)
+[[redirects]]
+  from = "/trading"
+  to = "/trading.html"
+  status = 200
