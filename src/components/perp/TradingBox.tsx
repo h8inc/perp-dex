@@ -5,6 +5,7 @@ import { getTokenIcon } from './TokenIcons';
 // Available tokens
 const AVAILABLE_TOKENS = [
   { symbol: 'BTC', name: 'Bitcoin' },
+  { symbol: 'WBTC', name: 'Wrapped Bitcoin' },
   { symbol: 'ETH', name: 'Ethereum' },
   { symbol: 'USDC', name: 'USD Coin' },
   { symbol: 'USDT', name: 'Tether' },
@@ -224,7 +225,7 @@ export const TradingBox = ({
   }, [isDraggingLeverage, updateLeverageFromPosition]);
 
   // @return
-  return <div className="flex w-full items-start justify-center bg-[#0b0e11] p-4 font-sans antialiased h-full" style={{
+  return <div className="flex w-full items-start justify-center bg-[#0b0e11] font-sans antialiased h-full" style={{
     paddingLeft: "0px",
     paddingRight: "0px",
     paddingTop: "0px",

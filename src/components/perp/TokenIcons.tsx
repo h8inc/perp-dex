@@ -18,11 +18,20 @@ export const EthereumIcon = ({ size = 24, className = '' }: { size?: number; cla
   </svg>
 );
 
-// USDC Icon
+// USDC Icon - Proper SVG matching official USDC logo
 export const USDCIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
-  <div className={`flex items-center justify-center rounded-full bg-[#2775ca] font-bold text-white ${className}`} style={{ width: size, height: size, fontSize: size * 0.45 }}>
-    $
-  </div>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`rounded-full ${className}`}>
+    <circle cx="12" cy="12" r="12" fill="#2775CA" />
+    <circle cx="12" cy="12" r="10" fill="#2775CA" />
+    <path d="M12 4C7.58 4 4 7.58 4 12s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z" fill="white" />
+    <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z" fill="#2775CA" />
+    <circle cx="12" cy="12" r="2.5" fill="white" />
+  </svg>
+);
+
+// Wrapped Bitcoin Icon - Uses Bitcoin icon
+export const WBTCIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
+  <BitcoinIcon size={size} className={className} />
 );
 
 // USDT Icon
@@ -55,9 +64,11 @@ export const getTokenIcon = (symbol: string, size = 24, className = '') => {
   
   switch (normalizedSymbol) {
     case 'BTC':
-    case 'WBTC':
       return <BitcoinIcon size={size} className={className} />;
+    case 'WBTC':
+      return <WBTCIcon size={size} className={className} />;
     case 'ETH':
+      return <EthereumIcon size={size} className={className} />;
     case 'WETH':
       return <EthereumIcon size={size} className={className} />;
     case 'USDC':
