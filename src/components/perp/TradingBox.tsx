@@ -225,7 +225,7 @@ export const TradingBox = ({
   }, [isDraggingLeverage, updateLeverageFromPosition]);
 
   // @return
-  return <div className="flex w-full items-start justify-center bg-[#0b0e11] font-sans antialiased h-full" style={{
+  return <div className="flex items-start justify-start bg-[#0b0e11] font-sans antialiased h-full w-full" style={{
     paddingLeft: "0px",
     paddingRight: "0px",
     paddingTop: "0px",
