@@ -1,63 +1,88 @@
 import React from 'react';
 
-// Bitcoin Icon - Official Bitcoin logo (#F7931A orange with white ₿ symbol)
+// Token icon URLs matching CryptoSwapWidget
+const BTC_ICON_URL = "https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png?v=026";
+const ETH_ICON_URL = "https://token-icons.s3.amazonaws.com/eth.png";
+const USDC_ICON_URL = "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=026";
+const USDT_ICON_URL = "https://cryptologos.cc/logos/tether-usdt-logo.png?v=026";
+const SOL_ICON_URL = "https://cryptologos.cc/logos/solana-sol-logo.png?v=026";
+
+// Bitcoin Icon - Using image URL from CryptoSwapWidget (same as WBTC)
 export const BitcoinIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`rounded-full ${className}`}>
-    <circle cx="12" cy="12" r="12" fill="#F7931A" />
-    {/* Bitcoin ₿ symbol - B with two vertical lines */}
-    <path d="M8.5 6.5h1v11h-1v-11zm6 0h1v11h-1v-11z" fill="white" />
-    <path d="M9.5 7.5h3.5c1.1 0 2 .9 2 2s-.9 2-2 2h-3.5v-4zm0 5h3.5c1.1 0 2 .9 2 2s-.9 2-2 2h-3.5v-4z" fill="white" />
-    <path d="M10.5 9.5h2.5v1h-2.5v-1zm0 3h2.5v1h-2.5v-1z" fill="#F7931A" />
-  </svg>
+  <img 
+    src={BTC_ICON_URL} 
+    alt="BTC" 
+    className={`rounded-full ${className}`}
+    style={{ width: size, height: size }}
+    onError={(e) => {
+      (e.target as HTMLImageElement).src = "https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png?v=026";
+    }}
+  />
 );
 
-// Ethereum Icon
+// Ethereum Icon - Using image URL from CryptoSwapWidget
 export const EthereumIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`rounded-full bg-[#627EEA] ${className}`}>
-    <path d="M12 2L5 12L12 16L19 12L12 2Z" fill="white" />
-    <path d="M5 12L12 16L12 22L5 17V12Z" fill="white" opacity="0.6" />
-    <path d="M19 12L12 16L12 22L19 17V12Z" fill="white" opacity="0.6" />
-  </svg>
+  <img 
+    src={ETH_ICON_URL} 
+    alt="ETH" 
+    className={`rounded-full ${className}`}
+    style={{ width: size, height: size }}
+    onError={(e) => {
+      (e.target as HTMLImageElement).src = "https://token-icons.s3.amazonaws.com/eth.png";
+    }}
+  />
 );
 
-// USDC Icon - Proper SVG matching official USDC logo
+// USDC Icon - Using image URL from CryptoSwapWidget
 export const USDCIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`rounded-full ${className}`}>
-    <circle cx="12" cy="12" r="12" fill="#2775CA" />
-    <circle cx="12" cy="12" r="10" fill="#2775CA" />
-    <path d="M12 4C7.58 4 4 7.58 4 12s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z" fill="white" />
-    <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z" fill="#2775CA" />
-    <circle cx="12" cy="12" r="2.5" fill="white" />
-  </svg>
+  <img 
+    src={USDC_ICON_URL} 
+    alt="USDC" 
+    className={`rounded-full ${className}`}
+    style={{ width: size, height: size }}
+    onError={(e) => {
+      (e.target as HTMLImageElement).src = "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=026";
+    }}
+  />
 );
 
-// Wrapped Bitcoin Icon - Uses Bitcoin icon
+// Wrapped Bitcoin Icon - Uses same image URL as Bitcoin
 export const WBTCIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
-  <BitcoinIcon size={size} className={className} />
+  <img 
+    src={BTC_ICON_URL} 
+    alt="WBTC" 
+    className={`rounded-full ${className}`}
+    style={{ width: size, height: size }}
+    onError={(e) => {
+      (e.target as HTMLImageElement).src = "https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png?v=026";
+    }}
+  />
 );
 
-// USDT Icon
+// USDT Icon - Using image URL from CryptoSwapWidget
 export const USDTIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`rounded-full bg-[#26a17b] ${className}`}>
-    <circle cx="12" cy="12" r="12" fill="#26a17b" />
-    <path d="M12 4.5C7.5 4.5 4 7.5 4 12C4 16.5 7.5 19.5 12 19.5C16.5 19.5 20 16.5 20 12C20 7.5 16.5 4.5 12 4.5ZM12 18C9 18 6.5 15.5 6.5 12.5C6.5 9.5 9 7 12 7C15 7 17.5 9.5 17.5 12.5C17.5 15.5 15 18 12 18Z" fill="white" />
-    <path d="M9 10.5H15V11.5H9V10.5Z" fill="white" />
-    <path d="M9 12.5H15V13.5H9V12.5Z" fill="white" />
-  </svg>
+  <img 
+    src={USDT_ICON_URL} 
+    alt="USDT" 
+    className={`rounded-full ${className}`}
+    style={{ width: size, height: size }}
+    onError={(e) => {
+      (e.target as HTMLImageElement).src = "https://cryptologos.cc/logos/tether-usdt-logo.png?v=026";
+    }}
+  />
 );
 
-// Solana Icon
+// Solana Icon - Using image URL from CryptoSwapWidget
 export const SolanaIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`rounded-full bg-gradient-to-br from-[#14F195] to-[#9945FF] ${className}`}>
-    <circle cx="12" cy="12" r="12" fill="url(#sol-gradient)" />
-    <defs>
-      <linearGradient id="sol-gradient" x1="0" y1="0" x2="24" y2="24">
-        <stop offset="0%" stopColor="#14F195" />
-        <stop offset="100%" stopColor="#9945FF" />
-      </linearGradient>
-    </defs>
-    <path d="M7.5 7.5L16.5 7.5L7.5 16.5L16.5 16.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
+  <img 
+    src={SOL_ICON_URL} 
+    alt="SOL" 
+    className={`rounded-full ${className}`}
+    style={{ width: size, height: size }}
+    onError={(e) => {
+      (e.target as HTMLImageElement).src = "https://cryptologos.cc/logos/solana-sol-logo.png?v=026";
+    }}
+  />
 );
 
 // Token icon mapper
