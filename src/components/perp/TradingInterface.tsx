@@ -406,7 +406,7 @@ export const TradingInterface = () => {
         </div>
 
         {/* Right Column: Order Entry */}
-        <div className="w-[440px] shrink-0 border-l border-white/10 bg-[#0b0e11] overflow-y-auto flex items-start justify-start">
+        <div className="w-[440px] shrink-0 border-l border-white/10 bg-[#0b0e11] overflow-y-auto">
           <TradingBox isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
         </div>
       </div>

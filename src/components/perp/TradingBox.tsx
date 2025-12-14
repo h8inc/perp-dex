@@ -226,7 +226,7 @@ export const TradingBox = ({
 
   // @return
   return <>
-      <div className="w-full max-w-[440px] shrink-0 rounded-xl bg-[#0b0e11] border border-white/10 font-sans antialiased h-full" style={{
+      <div className="w-full rounded-xl bg-[#0b0e11] border border-white/10 font-sans antialiased h-full" style={{
       borderTopWidth: "0px",
       borderRightWidth: "0px",
       borderBottomWidth: "0px",
