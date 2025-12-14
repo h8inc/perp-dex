@@ -54,13 +54,12 @@ export const TradingMetrics = () => {
 
   // @return
   return (
-    <div className="w-full bg-transparent flex justify-center mt-8 px-4">
+    <div className="w-full bg-transparent flex justify-center mt-8 px-4 pb-12 md:pb-8">
       <div
         className={cn(
-          "grid w-full items-start",
-          "grid-cols-1 sm:grid-cols-3",
-          "gap-4 sm:gap-6 md:gap-8",
-          "max-w-4xl"
+          "flex flex-col md:flex-row items-start md:items-center justify-center",
+          "gap-6 md:gap-12 lg:gap-16",
+          "w-full md:w-auto"
         )}
       >
         {metrics.map((metric, index) => (
