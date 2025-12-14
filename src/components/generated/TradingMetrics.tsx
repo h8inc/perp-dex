@@ -57,9 +57,9 @@ export const TradingMetrics = () => {
     <div className="w-full bg-transparent flex justify-center mt-8 px-4 pb-12 md:pb-8">
       <div
         className={cn(
-          "flex flex-col md:flex-row items-start md:items-center justify-center",
-          "gap-6 md:gap-12 lg:gap-16",
-          "w-full md:w-auto"
+          "flex flex-row items-center justify-center flex-wrap",
+          "gap-4 md:gap-12 lg:gap-20",
+          "w-full max-w-full"
         )}
       >
         {metrics.map((metric, index) => (
