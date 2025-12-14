@@ -28,7 +28,7 @@ function App() {
     return (
       <div className="min-h-screen w-full flex flex-col items-center bg-[#0b0e11]">
         <Header />
-        <main className="w-full flex flex-col items-center gap-8 px-4 pt-6 pb-10 md:pt-10">
+        <main className="w-full flex flex-col items-center gap-8">
           {generatedComponent}
         </main>
       </div>
@@ -37,7 +37,7 @@ function App() {
     return (
       <>
         <Header />
-        <main className="w-full flex flex-col items-center gap-8 px-4 pt-6 pb-10 md:pt-10">
+        <main className="w-full flex flex-col items-center gap-8">
           {generatedComponent}
         </main>
       </>
