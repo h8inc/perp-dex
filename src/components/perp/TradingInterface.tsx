@@ -393,9 +393,9 @@ export const TradingInterface = () => {
       <Header isWalletConnected={isWalletConnected} onConnect={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
       <MarketTicker />
       
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
         {/* Left Column: Chart & Bottom Panel */}
-        <div className="flex flex-[0.6] flex-col min-w-0">
+        <div className="flex w-full lg:flex-[0.6] flex-col min-w-0">
           <ChartSection />
           <BottomPanel isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} />
         </div>
@@ -406,7 +406,7 @@ export const TradingInterface = () => {
         </div>
 
         {/* Right Column: Order Entry */}
-        <div className="w-[440px] shrink-0 border-l border-white/10 bg-[#0b0e11] overflow-y-auto">
+        <div className="w-full lg:flex-[0.32] lg:min-w-[420px] lg:max-w-[520px] border-l border-white/10 bg-[#0b0e11] overflow-y-auto">
           <TradingBox isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
         </div>
       </div>
