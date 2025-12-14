@@ -88,7 +88,7 @@ export const CryptoSwapWidget = () => {
       
       <BackgroundGlyphs />
 
-      <div className="relative z-10 w-full flex flex-col items-center gap-8">
+      <div className="relative z-10 w-full flex flex-col items-center gap-8 pt-8 md:pt-0">
       
       {/* Headline */}
       <h1 className="text-4xl md:text-5xl font-bold text-center" style={{
