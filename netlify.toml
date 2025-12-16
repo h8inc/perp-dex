@@ -2,9 +2,25 @@
   command = "npm run build"
   publish = "dist"
 
-# Explicitly prevent Next.js auto-detection
+# Explicitly prevent Next.js auto-detection and framework detection
 [build.environment]
   NETLIFY_NEXT_PLUGIN_SKIP = "true"
+  NETLIFY_USE_NEXTJS_RUNTIME = "false"
+  NODE_VERSION = "18"
+
+# Disable automatic framework detection
+[build.processing]
+  skip_processing = false
+
+# Explicitly set framework to none (we're using Vite)
+[build.processing.css]
+  bundle = true
+  minify = true
+[build.processing.js]
+  bundle = true
+  minify = true
+[build.processing.html]
+  pretty_urls = true
 
 # Redirect /trading to /trading.html (optional, for cleaner URLs)
 [[redirects]]
