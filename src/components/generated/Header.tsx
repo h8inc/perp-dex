@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MoreHorizontal, X } from 'lucide-react';
-import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
+import { motion } from 'framer-motion';
 type HeaderProps = {
   onStartTrading?: () => void;
 };
@@ -8,17 +8,23 @@ type HeaderProps = {
 export const Header = ({ onStartTrading }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const { scrollY } = useScroll();
+  const [lastScrollY, setLastScrollY] = useState(0);
   const navigationLinks = ['Docs', 'Blog', 'Podcast', 'Developers'];
 
-  useMotionValueEvent(scrollY, 'change', (latest) => {
-    const previous = scrollY.getPrevious() ?? 0;
-    if (latest > previous && latest > 100) {
-      setIsVisible(false);
-    } else {
-      setIsVisible(true);
-    }
-  });
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const handleStartTrading = () => {
     if (onStartTrading) {
@@ -34,7 +40,7 @@ export const Header = ({ onStartTrading }: HeaderProps) => {
         initial={{ y: 0 }}
         animate={{ y: isVisible ? 0 : -72 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-6 md:px-8 h-[72px] bg-transparent border-b border-white/5"
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-6 md:px-8 h-[72px] backdrop-blur-md bg-[#1D1D1D]/80 border-b border-white/10"
       >
         {/* Mobile: Logo on Left */}
         <div className="md:hidden flex items-center gap-2 select-none">
