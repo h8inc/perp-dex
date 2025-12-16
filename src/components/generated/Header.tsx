@@ -44,7 +44,19 @@ export const Header = ({ onStartTrading }: HeaderProps) => {
       >
         {/* Mobile: Logo on Left */}
         <div className="md:hidden flex items-center gap-2 select-none">
-          <div className="text-[#15F46F]">
+          <img 
+            src="/logo.svg" 
+            alt="Extended" 
+            className="w-5 h-5"
+            onError={(e) => {
+              // Fallback to SVG if image doesn't exist
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const fallback = target.nextElementSibling as HTMLElement;
+              if (fallback) fallback.style.display = 'block';
+            }}
+          />
+          <div className="text-[#15F46F] hidden">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
             </svg>
@@ -63,7 +75,19 @@ export const Header = ({ onStartTrading }: HeaderProps) => {
 
         {/* Desktop: Logo in Center */}
         <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-2 select-none">
-          <div className="text-[#15F46F]">
+          <img 
+            src="/logo.svg" 
+            alt="Extended" 
+            className="w-6 h-6"
+            onError={(e) => {
+              // Fallback to SVG if image doesn't exist
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const fallback = target.nextElementSibling as HTMLElement;
+              if (fallback) fallback.style.display = 'block';
+            }}
+          />
+          <div className="text-[#15F46F] hidden">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
             </svg>
