@@ -384,8 +384,10 @@ const BottomPanel = ({
     </div>;
 };
 
-// @component: TradingInterface
-export const TradingInterface = () => {
+// @component: TradingInterfacePrimitive
+// This uses TradingBoxPrimitive instead of TradingBox
+// Once TradingBoxPrimitive is validated, we can replace TradingBox with it
+export const TradingInterfacePrimitive = () => {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
 
@@ -425,3 +427,4 @@ export const TradingInterface = () => {
       </div>
     </div>;
 };
+

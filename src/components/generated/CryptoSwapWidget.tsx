@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { ArrowDown, ChevronDown, X, Search, Wallet, Globe } from 'lucide-react';
+import { ArrowDown, ChevronDown } from 'lucide-react';
 import { TradingMetrics } from './TradingMetrics';
 import { BackgroundGlyphs } from './BackgroundGlyphs';
+import { TokenSelector, type TokenData } from '../perp/primitives/TokenSelector';
 const ETH_ICON = "https://token-icons.s3.amazonaws.com/eth.png";
 
 // Mock suggested tokens for the Buy section
@@ -73,9 +74,8 @@ const TOKEN_LIST = [{
 export const CryptoSwapWidget = () => {
   const [sellAmount, setSellAmount] = useState<string>('');
   const [isTokenSelectorOpen, setIsTokenSelectorOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [buyToken, setBuyToken] = useState(() => POPULAR_TOKENS.find(t => t.symbol === "USDC") || POPULAR_TOKENS[0]);
-  const handleSelectToken = (token: any) => {
+  const [buyToken, setBuyToken] = useState<TokenData>(() => POPULAR_TOKENS.find(t => t.symbol === "USDC") || POPULAR_TOKENS[0]);
+  const handleSelectToken = (token: TokenData) => {
     setBuyToken(token);
     setIsTokenSelectorOpen(false);
   };
@@ -96,7 +96,7 @@ export const CryptoSwapWidget = () => {
         color: "rgb(250 250 250 / 0.98)",
         fontWeight: "500"
       }}>
-        Self-Custody. <span className="text-[#15F46F]">CEX-Grade Performance.</span>
+        Sel-custody trading. <span className="text-[#15F46F]">Crypto & TradFi</span>
       </h1>
 
       <div className="relative flex flex-col w-[480px] max-w-full bg-[#131313] rounded-[24px] p-2 shadow-2xl font-sans text-white border border-white/5 overflow-hidden" style={{
@@ -219,75 +219,21 @@ export const CryptoSwapWidget = () => {
 
       </div>
 
-      <p className="text-[#a0a0a0] text-base text-center max-w-[480px] -mt-4">CEX performance meets self-custody—perps, spot, lending, and instant-fiat in one seamless margin system.</p>
+      <p className="text-[#a0a0a0] text-base text-center max-w-[480px] -mt-4">Trade forex, gold, indices with USDC. DeFi-powered unified margins, spot markets, lending ahead.</p>
 
       <div className="w-full max-w-4xl">
         <TradingMetrics />
       </div>
 
-      {/* GLASSMORPHIC TOKEN SELECTOR OVERLAY - Moved outside to prevent overflow clipping */}
-      {isTokenSelectorOpen && <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop Blur Layer */}
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-300" onClick={() => setIsTokenSelectorOpen(false)} />
-          
-          {/* Content Container */}
-          <div className="relative w-[480px] max-w-full h-[600px] max-h-[90vh] bg-[#131313]/95 backdrop-blur-xl rounded-[24px] border border-white/10 flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 pb-2 shrink-0">
-              <h3 className="text-white font-semibold text-lg">Select a token</h3>
-              <button onClick={() => setIsTokenSelectorOpen(false)} className="p-1 hover:bg-white/10 rounded-full transition-colors cursor-pointer">
-                <X className="w-6 h-6 text-[#a0a0a0] hover:text-white" />
-              </button>
-            </div>
-
-            {/* Search Bar */}
-            <div className="px-4 pb-4 shrink-0">
-              <div className="relative group">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#a0a0a0] group-focus-within:text-[#15F46F] transition-colors" />
-                <input type="text" placeholder="Search tokens" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full bg-[#1f1f1f] text-white placeholder-[#5d6785] rounded-xl pl-10 pr-10 py-3 outline-none border border-transparent focus:border-[#15F46F]/50 transition-all text-base" />
-              </div>
-            </div>
-
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar px-4 pb-4 space-y-6">
-              
-              {/* Popular Tokens Grid */}
-              <div className="grid grid-cols-4 gap-2">
-                {POPULAR_TOKENS.map(token => <button key={token.symbol} className="flex flex-col items-center justify-center gap-1.5 p-2 rounded-xl border border-white/5 bg-[#1f1f1f]/50 hover:bg-[#2d2d2d] transition-colors group cursor-pointer" onClick={() => handleSelectToken(token)}>
-                    <img src={token.icon} alt={token.symbol} className="w-8 h-8 rounded-full" />
-                    <span className="text-xs font-medium text-white group-hover:text-white/90">{token.symbol}</span>
-                  </button>)}
-              </div>
-
-              {/* Token List */}
-              <div className="space-y-1">
-                <div className="text-sm text-[#a0a0a0] font-medium mb-2 sticky top-0 bg-[#131313] py-2 z-10">
-                  Tokens by 24H volume
-                </div>
-                
-                {TOKEN_LIST.filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()) || t.symbol.toLowerCase().includes(searchQuery.toLowerCase())).map(token => <button key={`${token.symbol}-${token.name}`} onClick={() => handleSelectToken(token)} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group text-left cursor-pointer">
-                    <div className="w-10 h-10 rounded-full overflow-hidden bg-[#2d2d2d] shrink-0">
-                      <img src={token.icon} alt={token.symbol} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                          <span className="text-white font-medium text-base truncate">{token.name}</span>
-                          <span className="text-[#5d6785] text-xs font-medium bg-[#1f1f1f] px-1.5 py-0.5 rounded uppercase">{token.symbol}</span>
-                      </div>
-                      <div className="text-[#a0a0a0] text-sm group-hover:text-[#a0a0a0]/80">
-                         {token.symbol} 
-                      </div>
-                    </div>
-                    <div className="text-right">
-                       {/* Optional: Add balance or price here if available */}
-                    </div>
-                  </button>)}
-              </div>
-            </div>
-
-          </div>
-        </div>}
+      {/* Token Selector */}
+      <TokenSelector
+        isOpen={isTokenSelectorOpen}
+        onClose={() => setIsTokenSelectorOpen(false)}
+        onSelectToken={handleSelectToken}
+        availableTokens={TOKEN_LIST}
+        popularTokens={POPULAR_TOKENS}
+        listTitle="Tokens by 24H volume"
+      />
 
       </div>
     </div>;

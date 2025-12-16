@@ -5,6 +5,9 @@ import { cn } from '../../lib/utils';
 import { TradingBoxPrimitive } from './TradingBoxPrimitive';
 import { getTokenIcon } from './TokenIcons';
 
+// This is the same structure as TradingInterface but uses TradingBoxPrimitive
+// All the components (Header, MarketTicker, ChartSection, OrderBook, BottomPanel) are the same
+
 // --- Types & Mock Data ---
 
 type OrderBookItem = {
@@ -27,19 +30,16 @@ const generateOrderBook = (): {
       price: askPrice,
       size: Math.random() * 2 + 0.1,
       total: 0,
-      // calculated later
       type: 'ask'
     });
     bids.push({
       price: bidPrice,
       size: Math.random() * 2 + 0.1,
       total: 0,
-      // calculated later
       type: 'bid'
     });
   }
 
-  // Calculate totals
   let askTotal = 0;
   asks.forEach(a => {
     askTotal += a.size;
@@ -84,7 +84,7 @@ const {
 const TIME_FRAMES = ['1m', '15m', '30m', '1h', '4h', 'D', 'W'];
 const TABS_BOTTOM = ['Account', 'Balances', 'Positions', 'Orders', 'TWAP', 'Trades', 'Funding', 'Realized PnL', 'Orders History', 'Transfers'];
 
-// --- Components ---
+// --- Components (same as TradingInterface) ---
 
 const Header = ({
   isWalletConnected,
@@ -116,14 +116,6 @@ const Header = ({
       </nav>
     </div>
     <div className="flex items-center gap-3">
-      <div className="hidden md:flex items-center gap-2">
-        <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" style={{
-        display: "none"
-      }}></span>
-        <span className="text-xs text-green-500" style={{
-        display: "none"
-      }}>Connected</span>
-      </div>
       <button className="p-2 hover:bg-white/5 rounded-full"><Bell size={16} /></button>
       <button className="p-2 hover:bg-white/5 rounded-full"><Settings size={16} /></button>
       {!isWalletConnected ? <button onClick={onConnect} className="flex items-center gap-2 bg-[#15F46F] hover:bg-[#12d160] text-[#06171E] px-4 h-9 rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0">
@@ -134,6 +126,7 @@ const Header = ({
         </button>}
     </div>
   </header>;
+
 const MarketTicker = () => <div className="flex h-14 items-center gap-6 border-b border-white/10 bg-[#0b0e11] px-4 text-xs overflow-x-auto no-scrollbar">
     <div className="flex items-center gap-2 pr-4 border-r border-white/10 min-w-fit">
       <div className="flex items-center gap-1.5 cursor-pointer hover:bg-white/5 p-1 rounded">
@@ -181,10 +174,10 @@ const MarketTicker = () => <div className="flex h-14 items-center gap-6 border-b
       <span className="text-white">452,119,618 USD</span>
     </div>
   </div>;
+
 const ChartSection = () => {
   const [timeframe, setTimeframe] = useState('1h');
   return <div className="flex flex-1 flex-col border-r border-white/10 bg-[#0b0e11]">
-      {/* Chart Toolbar */}
       <div className="flex h-10 items-center justify-between border-b border-white/10 px-2">
         <div className="flex items-center gap-1">
           {TIME_FRAMES.map(tf => <button key={tf} onClick={() => setTimeframe(tf)} className={cn("px-2 py-1 text-xs rounded hover:bg-white/5 transition-colors", timeframe === tf ? "text-[#00ff9d] bg-white/5" : "text-gray-400")}>
@@ -202,7 +195,6 @@ const ChartSection = () => {
         </div>
       </div>
 
-      {/* Main Chart Area */}
       <div className="relative flex-1 min-h-[400px]">
         <div className="absolute inset-0 p-4">
           <div className="flex items-center gap-4 text-xs text-gray-400 mb-2">
@@ -248,7 +240,6 @@ const ChartSection = () => {
           </ResponsiveContainer>
         </div>
         
-        {/* Floating Tools (Left Side) */}
         <div className="absolute left-2 top-12 flex flex-col gap-1 bg-[#15191e] border border-white/5 rounded p-1">
           {[1, 2, 3, 4, 5, 6].map(i => <button key={i} className="p-1.5 hover:bg-white/10 rounded text-gray-400 hover:text-white">
                 <Layout size={14} />
@@ -257,6 +248,7 @@ const ChartSection = () => {
       </div>
     </div>;
 };
+
 const OrderBook = () => {
   return <div className="flex w-[280px] flex-col border-r border-white/10 bg-[#0b0e11]">
       <div className="flex h-10 items-center justify-between border-b border-white/10 px-3">
@@ -274,7 +266,6 @@ const OrderBook = () => {
       </div>
 
       <div className="flex-1 overflow-hidden flex flex-col">
-        {/* Asks (Red) */}
         <div className="flex-1 overflow-hidden flex flex-col justify-end">
           {asks.slice(0, 14).map((ask, i) => <div key={i} className="relative flex items-center justify-between px-3 py-0.5 text-xs hover:bg-white/5 cursor-pointer group">
               <span className="text-[#ff4d4d] z-10">{ask.price.toFixed(0)}</span>
@@ -286,7 +277,6 @@ const OrderBook = () => {
             </div>)}
         </div>
 
-        {/* Current Price Middle Section */}
         <div className="flex items-center justify-between bg-[#15191e] px-3 py-2 my-1 border-y border-white/5">
            <div className="flex items-center gap-2">
              <span className="text-lg font-bold text-[#00ff9d]">90,528</span>
@@ -295,7 +285,6 @@ const OrderBook = () => {
            <span className="text-[10px] text-gray-500">Spread: 0.01%</span>
         </div>
 
-        {/* Bids (Green) */}
         <div className="flex-1 overflow-hidden">
           {bids.slice(0, 14).map((bid, i) => <div key={i} className="relative flex items-center justify-between px-3 py-0.5 text-xs hover:bg-white/5 cursor-pointer group">
               <span className="text-[#00ff9d] z-10">{bid.price.toFixed(0)}</span>
@@ -308,7 +297,6 @@ const OrderBook = () => {
         </div>
       </div>
       
-      {/* Bottom controls of orderbook */}
       <div className="p-2 border-t border-white/10 flex justify-between items-center bg-[#0b0e11]">
          <div className="flex gap-1">
              <button className="bg-white/5 p-1 rounded hover:bg-white/10 text-xs text-gray-400">All</button>
@@ -322,6 +310,7 @@ const OrderBook = () => {
       </div>
     </div>;
 };
+
 const BottomPanel = ({
   isWalletConnected,
   onConnectWallet
@@ -344,7 +333,6 @@ const BottomPanel = ({
                 </button>)}
         </div>
         
-        {/* Content Area */}
         <div className="flex-1 p-0 overflow-auto">
             {activeTab === 'Account' && <div className="px-4 py-4">
                     {!isWalletConnected ? <div className="flex justify-between items-center">
@@ -375,7 +363,6 @@ const BottomPanel = ({
                         <div className="text-right">Contrib. Factor</div>
                         <div className="text-right">Available to Withdraw</div>
                     </div>
-                    {/* Empty State */}
                     <div className="flex flex-col items-center justify-center py-12 text-center">
                         <p className="text-gray-500 text-xs mb-4">No balance data.</p>
                     </div>
@@ -384,35 +371,33 @@ const BottomPanel = ({
     </div>;
 };
 
-// @component: TradingInterface
-export const TradingInterface = () => {
+// @component: TradingInterfaceWithPrimitive
+// Uses the same structure as TradingInterface but with TradingBoxPrimitive
+export const TradingInterfaceWithPrimitive = () => {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
 
-  // @return
   return <div className="flex flex-col h-screen w-full bg-[#0b0e11] text-white overflow-hidden font-sans selection:bg-[#00ff9d]/30">
       <Header isWalletConnected={isWalletConnected} onConnect={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
       <MarketTicker />
       
       <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
-        {/* Left Column: Chart & Bottom Panel */}
         <div className="flex flex-1 flex-col min-w-0">
           <ChartSection />
           <BottomPanel isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} />
         </div>
 
-        {/* Middle Column: Order Book */}
         <div className="hidden lg:block border-l border-white/10 w-[280px] shrink-0">
           <OrderBook />
         </div>
 
-        {/* Right Column: Order Entry */}
+        {/* Right Column: Order Entry - USING TradingBoxPrimitive */}
         <div className="hidden lg:block border-l border-white/10 bg-[#0b0e11] overflow-y-auto lg:flex-[0.32] lg:min-w-[360px] lg:max-w-[520px]">
           <TradingBoxPrimitive isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
         </div>
       </div>
 
-      {/* Mobile bottom sheet for TradingBox */}
+      {/* Mobile bottom sheet for TradingBoxPrimitive */}
       <div className="fixed inset-x-0 bottom-0 z-50 lg:hidden">
         <TradingBoxPrimitive
           isMobileSheet
@@ -425,3 +410,4 @@ export const TradingInterface = () => {
       </div>
     </div>;
 };
+

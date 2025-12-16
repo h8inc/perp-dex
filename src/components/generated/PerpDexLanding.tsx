@@ -39,7 +39,7 @@ export const PerpDexLanding = (_props: PerpDexLandingProps) => {
           fontSize: "48px",
           marginBottom: "32px"
         }}>
-            Self-Custody Trading. <span className="text-[#15F46F]">CEX-Grade Performance.</span>
+            Non-Custodial Trading: Crypto & TradFi at <span className="text-[#15F46F]">100x Leverage</span>
           </h1>
 
           <motion.div initial={{
@@ -123,7 +123,7 @@ export const PerpDexLanding = (_props: PerpDexLandingProps) => {
         delay: 0.4
       }} className="text-center">
           <p className="text-white/80 text-lg sm:text-xl font-medium mb-12 sm:mb-20 max-w-3xl mx-auto px-4">
-            Trade everything—perps, spot, lending, and instant-fiat settlement—under one seamless margin system
+            Trade forex, gold, indices with USDC. DeFi-powered unified margins, spot markets, lending ahead.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-4xl mx-auto">
