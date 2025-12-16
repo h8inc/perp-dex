@@ -43,25 +43,12 @@ export const Header = ({ onStartTrading }: HeaderProps) => {
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-6 md:px-8 h-[72px] backdrop-blur-md bg-[#1D1D1D]/80 border-b border-white/10"
       >
         {/* Mobile: Logo on Left */}
-        <div className="md:hidden flex items-center gap-2 select-none">
+        <div className="md:hidden flex items-center select-none">
           <img 
             src="/logo.svg" 
             alt="Extended" 
-            className="w-5 h-5"
-            onError={(e) => {
-              // Fallback to SVG if image doesn't exist
-              const target = e.target as HTMLImageElement;
-              target.style.display = 'none';
-              const fallback = target.nextElementSibling as HTMLElement;
-              if (fallback) fallback.style.display = 'block';
-            }}
+            className="h-5 w-auto"
           />
-          <div className="text-[#15F46F] hidden">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
-            </svg>
-          </div>
-          <span className="text-white text-lg font-normal tracking-wide font-sans">extended</span>
         </div>
 
         {/* Desktop: Navigation Links on Left */}
@@ -74,25 +61,12 @@ export const Header = ({ onStartTrading }: HeaderProps) => {
         </div>
 
         {/* Desktop: Logo in Center */}
-        <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-2 select-none">
+        <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center select-none">
           <img 
             src="/logo.svg" 
             alt="Extended" 
-            className="w-6 h-6"
-            onError={(e) => {
-              // Fallback to SVG if image doesn't exist
-              const target = e.target as HTMLImageElement;
-              target.style.display = 'none';
-              const fallback = target.nextElementSibling as HTMLElement;
-              if (fallback) fallback.style.display = 'block';
-            }}
+            className="h-6 w-auto"
           />
-          <div className="text-[#15F46F] hidden">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
-            </svg>
-          </div>
-          <span className="text-white text-xl font-normal tracking-wide font-sans">extended</span>
         </div>
 
         {/* Right: Mobile - Hamburger Menu + Start Trading Button */}
