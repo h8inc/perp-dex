@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine } from 'recharts';
 import { ChevronDown, Settings, Maximize2, Share2, Camera, Layout, Search, Bell, Menu, Wallet, ArrowUpDown, Plus, Minus, MoreHorizontal, Info, History, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { TradingBoxPrimitive } from './TradingBoxPrimitive';
 import { getTokenIcon } from './TokenIcons';
@@ -94,16 +95,33 @@ const Header = ({
   isWalletConnected: boolean;
   onConnect: () => void;
   onDisconnect: () => void;
-}) => <header className="flex h-12 items-center justify-between border-b border-white/10 bg-[#0b0e11] px-4 text-sm font-medium text-gray-400">
-    <div className="flex items-center gap-6">
-      <div className="flex items-center gap-2 select-none">
-        <div className="text-[#15F46F]">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
-          </svg>
-        </div>
-        <span className="text-white text-lg font-normal tracking-wide font-sans">extended</span>
-      </div>
+}) => {
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
+  return (
+    <motion.header
+      initial={{ y: 0 }}
+      animate={{ y: isVisible ? 0 : -72 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+      className="fixed top-0 left-0 right-0 z-50 flex h-[72px] items-center justify-between border-b border-white/10 backdrop-blur-md bg-[#0b0e11]/80 px-4 sm:px-6 md:px-8 text-sm font-medium text-gray-400"
+    >
+      {/* Navigation Links on Left */}
       <nav className="hidden md:flex items-center gap-4">
         <a href="#" className="text-white hover:text-[#00ff9d]">Trade</a>
         <a href="#" className="hover:text-white">Portfolio</a>
@@ -114,26 +132,38 @@ const Header = ({
         <a href="#" className="hover:text-white">Leaderboard</a>
         <a href="#" className="hover:text-white">More</a>
       </nav>
-    </div>
-    <div className="flex items-center gap-3">
-      <div className="hidden md:flex items-center gap-2">
-        <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" style={{
-        display: "none"
-      }}></span>
-        <span className="text-xs text-green-500" style={{
-        display: "none"
-      }}>Connected</span>
+
+      {/* Logo in Center */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center select-none">
+        <img 
+          src="/logo.svg" 
+          alt="Extended" 
+          className="h-6 w-auto"
+        />
       </div>
-      <button className="p-2 hover:bg-white/5 rounded-full"><Bell size={16} /></button>
-      <button className="p-2 hover:bg-white/5 rounded-full"><Settings size={16} /></button>
-      {!isWalletConnected ? <button onClick={onConnect} className="flex items-center gap-2 bg-[#15F46F] hover:bg-[#12d160] text-[#06171E] px-4 h-9 rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0">
-          <Wallet size={14} />
-          Connect Wallet
-        </button> : <button onClick={onDisconnect} className="flex items-center gap-2 px-3 h-9 rounded-lg text-sm font-medium text-white border border-white/10 hover:border-white/30 hover:bg-white/5 transition-colors cursor-pointer shrink-0">
-          Switch to guest
-        </button>}
-    </div>
-  </header>;
+
+      {/* Right: Buttons */}
+      <div className="flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" style={{
+          display: "none"
+        }}></span>
+          <span className="text-xs text-green-500" style={{
+          display: "none"
+        }}>Connected</span>
+        </div>
+        <button className="p-2 hover:bg-white/5 rounded-full"><Bell size={16} /></button>
+        <button className="p-2 hover:bg-white/5 rounded-full"><Settings size={16} /></button>
+        {!isWalletConnected ? <button onClick={onConnect} className="flex items-center gap-2 bg-[#15F46F] hover:bg-[#12d160] text-[#06171E] px-4 h-9 rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0">
+            <Wallet size={14} />
+            Connect Wallet
+          </button> : <button onClick={onDisconnect} className="flex items-center gap-2 px-3 h-9 rounded-lg text-sm font-medium text-white border border-white/10 hover:border-white/30 hover:bg-white/5 transition-colors cursor-pointer shrink-0">
+            Switch to guest
+          </button>}
+      </div>
+    </motion.header>
+  );
+};
 const MarketTicker = () => <div className="flex h-14 items-center gap-6 border-b border-white/10 bg-[#0b0e11] px-4 text-xs overflow-x-auto no-scrollbar">
     <div className="flex items-center gap-2 pr-4 border-r border-white/10 min-w-fit">
       <div className="flex items-center gap-1.5 cursor-pointer hover:bg-white/5 p-1 rounded">
@@ -392,7 +422,8 @@ export const TradingInterface = () => {
   // @return
   return <div className="flex flex-col h-screen w-full bg-[#0b0e11] text-white overflow-hidden font-sans selection:bg-[#00ff9d]/30">
       <Header isWalletConnected={isWalletConnected} onConnect={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
-      <MarketTicker />
+      <div className="pt-[72px]">
+        <MarketTicker />
       
       <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
         {/* Left Column: Chart & Bottom Panel */}
@@ -422,6 +453,7 @@ export const TradingInterface = () => {
           onConnectWallet={() => setIsWalletConnected(true)}
           onDisconnect={() => setIsWalletConnected(false)}
         />
+      </div>
       </div>
     </div>;
 };
