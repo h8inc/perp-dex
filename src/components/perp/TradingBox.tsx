@@ -230,12 +230,16 @@ export const TradingBox = ({
   }, [isDraggingLeverage, updateLeverageFromPosition]);
 
   const sheetWrapperClass = isMobileSheet
-    ? 'w-full bg-[#0b0e11] border-t border-white/10 font-sans antialiased shadow-2xl transition-transform duration-300'
+    ? 'w-full bg-[#0b0e11] border-t border-white/10 font-sans antialiased shadow-2xl transition-transform duration-300 h-[88vh] max-h-[88vh] flex flex-col'
     : 'flex w-full items-start justify-center bg-[#0b0e11] font-sans antialiased h-full';
 
   // @return
   const sheetWrapperStyle = isMobileSheet
-    ? { transform: isSheetOpen ? 'translateY(0)' : 'translateY(calc(100% - 56px))' }
+    ? { 
+        transform: isSheetOpen ? 'translateY(0)' : 'translateY(calc(100% - 56px))',
+        height: isSheetOpen ? '88vh' : '56px',
+        maxHeight: isSheetOpen ? '88vh' : '56px'
+      }
     : {
         paddingLeft: "0px",
         paddingRight: "0px",
@@ -245,7 +249,7 @@ export const TradingBox = ({
 
   return (
     <div className={sheetWrapperClass} style={sheetWrapperStyle}>
-      <div className={`${isMobileSheet ? 'w-full max-w-full rounded-t-[16px]' : 'w-full max-w-[420px] rounded-xl'} shrink-0 bg-[#0b0e11] border border-white/10`} style={{
+      <div className={`${isMobileSheet ? 'w-full max-w-full rounded-t-[16px] flex flex-col h-full max-h-full overflow-hidden' : 'w-full max-w-[420px] rounded-xl'} shrink-0 bg-[#0b0e11] border border-white/10`} style={{
       borderTopWidth: "0px",
       borderRightWidth: "0px",
       borderBottomWidth: "0px",
@@ -277,7 +281,7 @@ export const TradingBox = ({
         </div>
 
         {/* Form Content */}
-        <div className="flex flex-col gap-1 p-4" style={{
+        <div className={`flex flex-col gap-1 p-4 ${isMobileSheet ? 'flex-1 overflow-y-auto min-h-0' : ''}`} style={{
         width: "100%",
         maxWidth: "100%"
       }}>
