@@ -39,7 +39,10 @@ const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 mediaQuery.addEventListener('change', forceLightMode);
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import App from './App.tsx';
-createRoot(document.getElementById('root')!).render(<StrictMode>
-    <App />
-  </StrictMode>);
+import { LandingPage } from './components/generated/LandingPage';
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <LandingPage />
+  </StrictMode>
+);

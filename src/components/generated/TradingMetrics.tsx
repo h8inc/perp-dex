@@ -20,7 +20,7 @@ const MetricItem = ({
           {label}
           <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 opacity-70 group-hover:opacity-100 transition-opacity" />
         </span>
-        <div className="text-[28px] sm:text-[40px] font-medium tracking-tight text-foreground transition-colors duration-180 group-active:text-foreground/80 leading-none">
+        <div className="text-[28px] sm:text-[40px] font-medium tracking-tight text-[var(--accent)] transition-colors duration-180 group-active:text-[var(--accent)]/80 leading-none">
           {value}
         </div>
       </a>;
@@ -29,7 +29,7 @@ const MetricItem = ({
       <span className="text-xs sm:text-sm text-slate-400 whitespace-nowrap">
         {label}
       </span>
-      <div className="text-[28px] sm:text-[32px] md:text-[36px] font-medium tracking-tight text-foreground leading-none">
+      <div className="text-[28px] sm:text-[32px] md:text-[36px] font-medium tracking-tight text-[var(--accent)] leading-none">
         {value}
       </div>
     </div>;
@@ -56,10 +56,10 @@ export const TradingMetrics = () => {
   return (
     <div
       className={cn(
-        "w-full bg-transparent flex flex-row items-center justify-center flex-wrap",
-        "gap-4 md:gap-12 lg:gap-20",
-        "mt-8 pb-12 md:pb-8",
-        "-mx-4 px-4 md:mx-0 md:px-0"
+        "w-full bg-transparent flex flex-row items-center flex-wrap",
+        "justify-between md:justify-center",
+        "gap-4 md:gap-8 lg:gap-12",
+        "mt-8 pb-12 md:pb-8"
       )}
     >
       {metrics.map((metric, index) => (
