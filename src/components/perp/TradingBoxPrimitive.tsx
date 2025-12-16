@@ -123,14 +123,14 @@ export const TradingBoxPrimitive = ({
   };
 
   const sheetWrapperClass = isMobileSheet
-    ? 'w-full bg-[#0b0e11] border-t border-white/10 font-sans antialiased shadow-2xl transition-transform duration-300 h-[90vh] max-h-[90vh] flex flex-col'
+    ? 'w-full bg-[#0b0e11] border-t border-white/10 font-sans antialiased shadow-2xl transition-transform duration-300 h-[88vh] max-h-[88vh] flex flex-col'
     : 'flex w-full items-start justify-center bg-[#0b0e11] font-sans antialiased h-full';
 
   const sheetWrapperStyle = isMobileSheet
     ? { 
         transform: isSheetOpen ? 'translateY(0)' : 'translateY(calc(100% - 56px))',
-        height: isSheetOpen ? '90vh' : '56px',
-        maxHeight: isSheetOpen ? '90vh' : '56px'
+        height: isSheetOpen ? '88vh' : '56px',
+        maxHeight: isSheetOpen ? '88vh' : '56px'
       }
     : {
         paddingLeft: '0px',
@@ -177,28 +177,21 @@ export const TradingBoxPrimitive = ({
           <>
             {/* Header Tabs */}
             <div className="flex h-10 items-center justify-between rounded-t-xl border-b border-white/10 bg-[#0b0e11] overflow-hidden shrink-0">
-              {isSheetOpen && (
-                <TradingTabs activeTab={activeTab} onTabChange={setActiveTab} />
-              )}
-              {!isSheetOpen && isMobileSheet && (
-                <div className="flex-1" />
-              )}
+              <TradingTabs activeTab={activeTab} onTabChange={setActiveTab} />
               <div className="flex items-center px-4 shrink-0">
-                <button
-                  className="p-2 text-gray-400 hover:text-white transition-colors"
-                  onClick={() => onToggleSheet && onToggleSheet()}
-                  aria-label={isSheetOpen ? 'Collapse' : 'Expand'}
-                >
-                  {isMobileSheet ? (
-                    isSheetOpen ? (
+                {isMobileSheet && (
+                  <button
+                    className="p-2 text-gray-400 hover:text-white transition-colors"
+                    onClick={() => onToggleSheet && onToggleSheet()}
+                    aria-label={isSheetOpen ? 'Collapse' : 'Expand'}
+                  >
+                    {isSheetOpen ? (
                       <ChevronDown className="h-4 w-4" />
                     ) : (
                       <ChevronUp className="h-4 w-4" />
-                    )
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </button>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
 
