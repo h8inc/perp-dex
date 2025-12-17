@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { ChevronDown, Settings, Maximize2, Share2, Camera, Layout, Search, Bell, Menu, Wallet, ArrowUpDown, Plus, Minus, MoreHorizontal, X, Info, History, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { createChart, ColorType, IChartApi, ISeriesApi } from 'lightweight-charts';
 import { cn } from '../../lib/utils';
 import { TradingBoxPrimitive } from './TradingBoxPrimitive';
 import { getTokenIcon } from './TokenIcons';
@@ -88,100 +87,126 @@ const TABS_BOTTOM = ['Account', 'Balances', 'Positions', 'Orders', 'TWAP', 'Trad
 // --- Components ---
 
 const CandlestickChart = ({ data }: { data: Array<{ time: number; price: number; volume: number; ma7: number; ma25: number }> }) => {
-  const chartContainerRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<IChartApi | null>(null);
-  const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  // Convert price data to OHLC format for TradingView
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        setDimensions({
+          width: containerRef.current.offsetWidth,
+          height: containerRef.current.offsetHeight
+        });
+      }
+    };
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+  // Convert price data to OHLC (simplified - using price as close, generating OHLC)
   const ohlcData = useMemo(() => {
-    const now = Math.floor(Date.now() / 1000); // Current Unix timestamp in seconds
     return data.map((d, i) => {
       const open = i === 0 ? d.price : data[i - 1].price;
       const close = d.price;
       const high = Math.max(open, close) + Math.random() * 50;
       const low = Math.min(open, close) - Math.random() * 50;
-      // TradingView expects time as Unix timestamp in seconds
-      // Convert index to time (assuming each point is 1 minute apart, going backwards)
-      const time = now - (data.length - i) * 60;
-      return {
-        time: time,
-        open,
-        high,
-        low,
-        close
-      };
+      return { ...d, open, high, low, close };
     });
   }, [data]);
 
-  useEffect(() => {
-    if (!chartContainerRef.current) return;
+  if (dimensions.width === 0 || dimensions.height === 0) {
+    return <div ref={containerRef} className="w-full h-full" />;
+  }
 
-    // Create chart
-    const chart = createChart(chartContainerRef.current, {
-      layout: {
-        background: { type: ColorType.Solid, color: '#0b0e11' },
-        textColor: '#9ca3af',
-      },
-      grid: {
-        vertLines: { color: '#ffffff10' },
-        horzLines: { color: '#ffffff10' },
-      },
-      width: chartContainerRef.current.clientWidth,
-      height: chartContainerRef.current.clientHeight,
-      timeScale: {
-        timeVisible: false,
-        borderColor: '#ffffff10',
-      },
-      rightPriceScale: {
-        borderColor: '#ffffff10',
-        scaleMargins: {
-          top: 0.1,
-          bottom: 0.1,
-        },
-      },
-    });
+  const padding = { top: 20, right: 40, bottom: 20, left: 20 };
+  const chartWidth = dimensions.width - padding.left - padding.right;
+  const chartHeight = dimensions.height - padding.top - padding.bottom;
+  const candleWidth = chartWidth / ohlcData.length * 0.8;
+  const candleGap = chartWidth / ohlcData.length * 0.2;
 
-    // Add candlestick series
-    const candlestickSeries = chart.addCandlestickSeries({
-      upColor: '#00ff9d',
-      downColor: '#ff4d4d',
-      borderVisible: false,
-      wickUpColor: '#00ff9d',
-      wickDownColor: '#ff4d4d',
-    });
+  const allPrices = ohlcData.flatMap(d => [d.high, d.low]);
+  const minPrice = Math.min(...allPrices);
+  const maxPrice = Math.max(...allPrices);
+  const priceRange = maxPrice - minPrice || 1;
 
-    // Set data
-    candlestickSeries.setData(ohlcData);
+  const priceToY = (price: number) => {
+    return chartHeight - ((price - minPrice) / priceRange) * chartHeight;
+  };
 
-    chartRef.current = chart;
-    seriesRef.current = candlestickSeries;
+  return (
+    <div ref={containerRef} className="w-full h-full">
+      <svg width={dimensions.width} height={dimensions.height} className="w-full h-full">
+        {/* Grid lines */}
+        {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+          const y = padding.top + ratio * chartHeight;
+          return (
+            <line
+              key={ratio}
+              x1={padding.left}
+              y1={y}
+              x2={padding.left + chartWidth}
+              y2={y}
+              stroke="#ffffff10"
+              strokeDasharray="3 3"
+            />
+          );
+        })}
 
-    // Handle resize
-    const handleResize = () => {
-      if (chartContainerRef.current && chartRef.current) {
-        chartRef.current.applyOptions({
-          width: chartContainerRef.current.clientWidth,
-          height: chartContainerRef.current.clientHeight,
-        });
-      }
-    };
+        {/* Y-axis labels */}
+        {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+          const price = minPrice + (1 - ratio) * priceRange;
+          const y = padding.top + ratio * chartHeight;
+          return (
+            <text
+              key={ratio}
+              x={padding.left + chartWidth + 8}
+              y={y + 4}
+              fill="#6b7280"
+              fontSize="10"
+              textAnchor="start"
+            >
+              {price.toFixed(0)}
+            </text>
+          );
+        })}
 
-    window.addEventListener('resize', handleResize);
+        {/* Candlesticks */}
+        {ohlcData.map((d, i) => {
+          const x = padding.left + i * (candleWidth + candleGap) + candleGap / 2;
+          const isBullish = d.close >= d.open;
+          const bodyTop = priceToY(Math.max(d.open, d.close));
+          const bodyBottom = priceToY(Math.min(d.open, d.close));
+          const bodyHeight = Math.max(1, bodyBottom - bodyTop);
+          const wickTop = priceToY(d.high);
+          const wickBottom = priceToY(d.low);
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      chart.remove();
-    };
-  }, [ohlcData]);
-
-  // Update data when it changes
-  useEffect(() => {
-    if (seriesRef.current) {
-      seriesRef.current.setData(ohlcData);
-    }
-  }, [ohlcData]);
-
-  return <div ref={chartContainerRef} className="w-full h-full" />;
+          return (
+            <g key={i}>
+              {/* Wick */}
+              <line
+                x1={x + candleWidth / 2}
+                y1={wickTop}
+                x2={x + candleWidth / 2}
+                y2={wickBottom}
+                stroke={isBullish ? '#00ff9d' : '#ff4d4d'}
+                strokeWidth="1"
+              />
+              {/* Body */}
+              <rect
+                x={x}
+                y={bodyTop}
+                width={candleWidth}
+                height={bodyHeight}
+                fill={isBullish ? '#00ff9d' : '#ff4d4d'}
+                stroke={isBullish ? '#00ff9d' : '#ff4d4d'}
+              />
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
 };
 
 const Header = ({
@@ -601,10 +626,12 @@ const BottomPanel = ({
         {/* Content Area */}
         <div className="flex-1 p-0 overflow-auto">
             {activeTab === 'Account' && <div className="px-4 py-4">
-                    {!isWalletConnected ? <div className="flex justify-between items-center">
+                    {!isWalletConnected ? <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div className="text-gray-400 text-sm">Connect your wallet to view account stats.</div>
-                        <button onClick={onConnectWallet} className="h-9 px-4 rounded-lg bg-[#15F46F] hover:bg-[#12d160] text-[#06171E] text-sm font-medium transition-colors">
-                          Connect Wallet
+                        <button onClick={onConnectWallet} className="flex items-center gap-2 bg-[#15F46F] hover:bg-[#12d160] text-[#06171E] px-4 py-2 md:px-6 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap shrink-0">
+                          <Wallet size={14} />
+                          <span className="hidden md:inline">Connect Wallet</span>
+                          <span className="md:hidden">Connect</span>
                         </button>
                       </div> : <div className="grid grid-cols-2 gap-y-2 text-sm">
                         <span className="text-gray-400">Unrealized PnL</span>
