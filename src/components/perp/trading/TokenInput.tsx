@@ -16,6 +16,7 @@ type TokenInputProps = {
   subValue?: string;
   balance?: string;
   readOnly?: boolean;
+  compact?: boolean;
 };
 
 export const TokenInput = ({
@@ -26,10 +27,16 @@ export const TokenInput = ({
   onTokenClick,
   subValue,
   balance,
-  readOnly = false
+  readOnly = false,
+  compact = false
 }: TokenInputProps) => {
+  const padding = compact ? 'p-3' : 'p-4';
+  const inputSize = compact ? 'text-xl' : 'text-2xl';
+  const tokenBtnPadding = compact ? 'py-1 px-2.5' : 'py-1.5 pl-2 pr-3';
+  const tokenIconSize = compact ? 20 : 24;
+
   return (
-    <div className="rounded-lg border border-white/10 bg-[#15191e] p-4 transition-colors focus-within:border-[#00ff9d]/50 hover:bg-[#1a1d26]">
+    <div className={`rounded-lg border border-white/10 bg-[#15191e] ${padding} transition-colors focus-within:border-[#00ff9d]/50 hover:bg-[#1a1d26]`}>
       <div className="mb-2 flex justify-between text-xs text-gray-400">
         <span>{label}</span>
         {balance && <span>{balance}</span>}
@@ -42,7 +49,7 @@ export const TokenInput = ({
           value={value}
           onChange={e => onChange && onChange(e.target.value)}
           readOnly={readOnly}
-          className="w-full min-w-0 bg-transparent text-2xl font-medium text-white placeholder-gray-600 outline-none"
+          className={`w-full min-w-0 bg-transparent ${inputSize} font-medium text-white placeholder-gray-600 outline-none`}
         />
         <div className="flex shrink-0 items-center gap-2">
           {subValue && (
@@ -53,9 +60,9 @@ export const TokenInput = ({
           )}
           <button
             onClick={onTokenClick}
-            className="flex items-center gap-2 rounded-full bg-white/5 py-1.5 pl-2 pr-3 hover:bg-white/10 transition-colors border border-transparent hover:border-white/10 cursor-pointer"
+            className={`flex items-center gap-2 rounded-full bg-white/5 ${tokenBtnPadding} hover:bg-white/10 transition-colors border border-transparent hover:border-white/10 cursor-pointer`}
           >
-            {getTokenIcon(token.symbol, 24)}
+            {getTokenIcon(token.symbol, tokenIconSize)}
             <span className="text-base font-medium text-white">{token.symbol}</span>
             <ChevronDown className="h-4 w-4 text-gray-400" />
           </button>

@@ -235,6 +235,7 @@ export const TradingBoxPrimitive = ({
                 setTokenSelectorFor('pay');
                 setIsTokenSelectorOpen(true);
               }}
+              compact
             />
           </div>
 
@@ -255,6 +256,7 @@ export const TradingBoxPrimitive = ({
               }}
               subValue={undefined}
               readOnly
+              compact
             />
           </div>
 
@@ -302,6 +304,7 @@ export const TradingBoxPrimitive = ({
               setTokenSelectorFor('pay');
               setIsTokenSelectorOpen(true);
             }}
+            compact
           />
         </div>
 
@@ -322,6 +325,7 @@ export const TradingBoxPrimitive = ({
             }}
             subValue={showLeverage ? `${clampedLeverage.toFixed(2)}x` : undefined}
             readOnly
+            compact
           />
         </div>
 
@@ -391,9 +395,7 @@ export const TradingBoxPrimitive = ({
             {/* Form Content - Only show when sheet is open */}
             {isSheetOpen ? (
           <div
-            className={`flex flex-col gap-1 p-4 ${
-              isMobileSheet ? 'flex-1 overflow-y-auto min-h-0' : ''
-            }`}
+            className="flex flex-col gap-1 p-3 md:p-4 flex-1 overflow-y-auto min-h-0 max-h-[calc(100vh-140px)]"
             style={{
               width: '100%',
               maxWidth: '100%'
