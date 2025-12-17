@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Settings, Info, ArrowDown } from 'lucide-react';
+import { ChevronDown, ChevronUp, Settings, Info, ArrowDown, X } from 'lucide-react';
 import { TokenInput, type Token } from './trading/TokenInput';
 import { TradingTabs } from './trading/TradingTabs';
 import { LeverageSlider } from './trading/LeverageSlider';
@@ -60,6 +60,9 @@ export const TradingBoxPrimitive = ({
   );
   const [isTokenSelectorOpen, setIsTokenSelectorOpen] = useState(false);
   const [tokenSelectorFor, setTokenSelectorFor] = useState<'pay' | 'receive'>('pay');
+  const [isTPSLEnabled, setIsTPSLEnabled] = useState(false);
+  const [takeProfitEntries, setTakeProfitEntries] = useState<Array<{ id: string; price: string; percentage: string }>>([]);
+  const [stopLossEntries, setStopLossEntries] = useState<Array<{ id: string; price: string; percentage: string }>>([]);
   
   // Network selection state
   const [selectedNetwork, setSelectedNetwork] = useState<{ id: string; name: string; icon?: string } | undefined>({
@@ -291,6 +294,203 @@ export const TradingBoxPrimitive = ({
             />
           )}
 
+          {/* Take Profit / Stop Loss Section */}
+          {!isSwap && (
+            <div className="mt-4 flex flex-col gap-3">
+              {/* Header with Toggle */}
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] font-medium text-[#00ff9d]">Take Profit / Stop Loss</span>
+                <button
+                  onClick={() => {
+                    const newEnabled = !isTPSLEnabled;
+                    setIsTPSLEnabled(newEnabled);
+                    if (newEnabled && takeProfitEntries.length === 0 && stopLossEntries.length === 0) {
+                      setTakeProfitEntries([{ id: `tp-${Date.now()}`, price: '', percentage: '100' }]);
+                      setStopLossEntries([{ id: `sl-${Date.now()}`, price: '', percentage: '100' }]);
+                    } else if (!newEnabled) {
+                      setTakeProfitEntries([]);
+                      setStopLossEntries([]);
+                    }
+                  }}
+                  className={`relative h-6 w-11 rounded-full transition-colors ${
+                    isTPSLEnabled ? 'bg-[#00ff9d]' : 'bg-white/10'
+                  }`}
+                  role="switch"
+                  aria-checked={isTPSLEnabled}
+                >
+                  <span
+                    className={`absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-white transition-transform ${
+                      isTPSLEnabled ? 'translate-x-6 left-1' : 'translate-x-0 left-1'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {isTPSLEnabled && (
+                <div className="flex flex-col gap-3">
+                  {/* Take Profit Section */}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-400">Take Profit</span>
+                      <button
+                        onClick={() => {
+                          const newId = `tp-${Date.now()}`;
+                          setTakeProfitEntries([...takeProfitEntries, { id: newId, price: '', percentage: '100' }]);
+                        }}
+                        className="h-6 w-6 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                      >
+                        <span className="text-gray-400 text-xs font-medium">+</span>
+                      </button>
+                    </div>
+                    
+                    {takeProfitEntries.length === 0 ? (
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                          <button className="h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10">
+                            <span className="text-gray-400 text-xs">$</span>
+                          </button>
+                          <input
+                            type="text"
+                            placeholder="Price"
+                            className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs placeholder-gray-500 outline-none focus:border-[#00ff9d]/50"
+                            disabled
+                          />
+                          <button className="h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-gray-400 text-xs">
+                            100%
+                          </button>
+                          <button className="h-8 w-8 rounded bg-red-500/20 flex items-center justify-center opacity-50 cursor-not-allowed">
+                            <X className="h-3 w-3 text-white" />
+                          </button>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-400">Take Profit PnL</span>
+                          <span className="text-gray-400">-</span>
+                        </div>
+                      </div>
+                    ) : (
+                      takeProfitEntries.map((entry, index) => (
+                        <div key={entry.id} className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <button className="h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10">
+                              <span className="text-gray-400 text-xs">$</span>
+                            </button>
+                            <input
+                              type="text"
+                              placeholder="Price"
+                              value={entry.price}
+                              onChange={(e) => {
+                                const updated = [...takeProfitEntries];
+                                updated[index].price = e.target.value;
+                                setTakeProfitEntries(updated);
+                              }}
+                              className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs placeholder-gray-500 outline-none focus:border-[#00ff9d]/50"
+                            />
+                            <button className="h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 text-xs">
+                              {entry.percentage}%
+                            </button>
+                            <button
+                              onClick={() => {
+                                setTakeProfitEntries(takeProfitEntries.filter((_, i) => i !== index));
+                              }}
+                              className="h-8 w-8 rounded bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors"
+                            >
+                              <X className="h-3 w-3 text-white" />
+                            </button>
+                          </div>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-gray-400">Take Profit PnL</span>
+                            <span className="text-gray-400">-</span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  {/* Separator */}
+                  <div className="h-px bg-white/10" />
+
+                  {/* Stop Loss Section */}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-400">Stop Loss</span>
+                      <button
+                        onClick={() => {
+                          const newId = `sl-${Date.now()}`;
+                          setStopLossEntries([...stopLossEntries, { id: newId, price: '', percentage: '100' }]);
+                        }}
+                        className="h-6 w-6 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                      >
+                        <span className="text-gray-400 text-xs font-medium">+</span>
+                      </button>
+                    </div>
+                    
+                    {stopLossEntries.length === 0 ? (
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                          <button className="h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10">
+                            <span className="text-gray-400 text-xs">$</span>
+                          </button>
+                          <input
+                            type="text"
+                            placeholder="Price"
+                            className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs placeholder-gray-500 outline-none focus:border-[#00ff9d]/50"
+                            disabled
+                          />
+                          <button className="h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-gray-400 text-xs">
+                            100%
+                          </button>
+                          <button className="h-8 w-8 rounded bg-red-500/20 flex items-center justify-center opacity-50 cursor-not-allowed">
+                            <X className="h-3 w-3 text-white" />
+                          </button>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-400">Stop Loss PnL</span>
+                          <span className="text-gray-400">-</span>
+                        </div>
+                      </div>
+                    ) : (
+                      stopLossEntries.map((entry, index) => (
+                        <div key={entry.id} className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <button className="h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10">
+                              <span className="text-gray-400 text-xs">$</span>
+                            </button>
+                            <input
+                              type="text"
+                              placeholder="Price"
+                              value={entry.price}
+                              onChange={(e) => {
+                                const updated = [...stopLossEntries];
+                                updated[index].price = e.target.value;
+                                setStopLossEntries(updated);
+                              }}
+                              className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs placeholder-gray-500 outline-none focus:border-[#00ff9d]/50"
+                            />
+                            <button className="h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 text-xs">
+                              {entry.percentage}%
+                            </button>
+                            <button
+                              onClick={() => {
+                                setStopLossEntries(stopLossEntries.filter((_, i) => i !== index));
+                              }}
+                              className="h-8 w-8 rounded bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors"
+                            >
+                              <X className="h-3 w-3 text-white" />
+                            </button>
+                          </div>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-gray-400">Stop Loss PnL</span>
+                            <span className="text-gray-400">-</span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Footer Info Area */}
           <div
             className={`mt-4 flex flex-col gap-2.5 rounded-lg p-1 text-[13px] ${
@@ -422,12 +622,73 @@ export const TradingBoxPrimitive = ({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between cursor-pointer group">
+                {/* Balance + Gas Notices */}
+                <div className="mt-2 flex flex-col gap-2">
+                  <div className="h-11 rounded-lg border border-white/10 bg-white/5 text-gray-400 flex items-center justify-center text-sm">
+                    Insufficient USDC balance
+                  </div>
+                  <div className="rounded-lg border border-white/10 bg-[#1a1d26]/80 p-3 text-xs text-gray-300 flex items-start gap-3">
+                    <div className="mt-[2px]">
+                      <ArrowDown className="h-4 w-4 text-[#00ff9d]" />
+                    </div>
+                    <div className="flex-1">
+                      Express and One-Click Trading are unavailable due to insufficient gas balance.
+                      <div className="mt-2 text-[#00ff9d] flex items-center gap-1 cursor-pointer hover:underline">
+                        Buy USDC, WETH or USDT
+                        <ChevronDown className="h-3 w-3 rotate-90" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className="flex items-center justify-between cursor-pointer group py-1"
+                  onClick={() => setIsExecDetailsOpen(!isExecDetailsOpen)}
+                >
                   <span className="text-gray-500 group-hover:text-[#00ff9d] transition-colors">
                     Execution Details
                   </span>
-                  <ChevronDown className="h-4 w-4 text-gray-500 group-hover:text-[#00ff9d] transition-colors" />
+                  <ChevronDown
+                    className={`h-4 w-4 text-gray-500 group-hover:text-[#00ff9d] transition-colors ${
+                      isExecDetailsOpen ? 'rotate-180' : ''
+                    }`}
+                  />
                 </div>
+
+                {isExecDetailsOpen && (
+                  <div className="flex flex-col gap-2.5 pl-0 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Fees</span>
+                      <span className="text-white">&lt;$0.01</span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1">
+                        <span className="text-gray-500">Network Fee</span>
+                        <Info className="h-3 w-3 text-gray-500" />
+                      </div>
+                      <span className="text-white">-$0.29</span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Collateral Spread</span>
+                      <span className="text-white">0.00%</span>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="flex items-center gap-1">
+                        <span className="text-gray-500">Allowed Slippage</span>
+                        <Info className="h-3 w-3 text-gray-500" />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded bg-white/5 px-2 py-0.5 text-xs text-gray-500 hover:text-white">
+                          -
+                        </button>
+                        <span className="text-white">1%</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {isWalletConnected ? (
                   <button
