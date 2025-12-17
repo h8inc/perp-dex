@@ -221,6 +221,117 @@ export const TradingBoxPrimitive = ({
     </div>
   );
 
+  const renderInputs = () => {
+    if (isSwap) {
+      return (
+        <>
+          <div className="relative">
+            <TokenInput
+              label="Pay"
+              value={payAmount}
+              onChange={val => setPayAmount(val)}
+              token={payToken}
+              onTokenClick={() => {
+                setTokenSelectorFor('pay');
+                setIsTokenSelectorOpen(true);
+              }}
+            />
+          </div>
+
+          <div className="relative h-0 -my-2 z-10 flex items-center justify-center">
+            <button className="flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-[#0b0e11] bg-[#15191e] text-gray-400 shadow-lg hover:bg-[#1a1d26] hover:text-white transition-colors">
+              <ArrowDown className="h-5 w-5" />
+            </button>
+          </div>
+
+          <div className="relative">
+            <TokenInput
+              label="Receive"
+              value={longAmount}
+              token={receiveToken}
+              onTokenClick={() => {
+                setTokenSelectorFor('receive');
+                setIsTokenSelectorOpen(true);
+              }}
+              subValue={undefined}
+              readOnly
+            />
+          </div>
+
+          {orderType === 'Limit' && (
+            <>
+              {renderLimitPriceInput()}
+              <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2 text-[12px] text-blue-100 flex items-start gap-2">
+                <span className="mt-[2px]">ℹ️</span>
+                <span>
+                  The actual execution price may differ from the set limit price due to fees and price impact. This ensures that you receive at least the minimum receive amount.
+                </span>
+              </div>
+            </>
+          )}
+
+          {orderType === 'TWAP' && renderTwapFields(true)}
+
+          {orderType === 'StopMarket' && renderSimplePriceInput('Stop Price')}
+        </>
+      );
+    }
+
+    // Long / Short
+    if (orderType === 'TPSL') {
+      return (
+        <>
+          {renderSimplePriceInput('Close Price')}
+          {renderSimplePriceInput('Trigger Price')}
+        </>
+      );
+    }
+
+    const payLabel = 'Pay';
+    const receiveLabel = activeTab;
+
+    return (
+      <>
+        <div className="relative">
+          <TokenInput
+            label={payLabel}
+            value={payAmount}
+            onChange={val => setPayAmount(val)}
+            token={payToken}
+            onTokenClick={() => {
+              setTokenSelectorFor('pay');
+              setIsTokenSelectorOpen(true);
+            }}
+          />
+        </div>
+
+        <div className="relative h-0 -my-2 z-10 flex items-center justify-center">
+          <button className="flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-[#0b0e11] bg-[#15191e] text-gray-400 shadow-lg hover:bg-[#1a1d26] hover:text-white transition-colors">
+            <ArrowDown className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="relative">
+          <TokenInput
+            label={receiveLabel}
+            value={longAmount}
+            token={receiveToken}
+            onTokenClick={() => {
+              setTokenSelectorFor('receive');
+              setIsTokenSelectorOpen(true);
+            }}
+            subValue={showLeverage ? `${clampedLeverage.toFixed(2)}x` : undefined}
+            readOnly
+          />
+        </div>
+
+        {orderType === 'Limit' && renderLimitPriceInput()}
+        {orderType === 'StopMarket' && renderSimplePriceInput('Stop Price')}
+        {orderType === 'TWAP' && renderTwapFields(false)}
+      </>
+    );
+  };
+
   return (
     <>
       <div className={sheetWrapperClass} style={sheetWrapperStyle}>
