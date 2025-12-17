@@ -707,11 +707,64 @@ export const TradingBox = ({
                     <span className="text-white">0.000%</span> / <span className="text-white">0.000%</span>
                   </div>
                 </div>
-                
-                <div className="flex items-center justify-between cursor-pointer group">
-                  <span className="text-gray-500 group-hover:text-[#00ff9d] transition-colors">Execution Details</span>
-                  <ChevronDown className="h-4 w-4 text-gray-500 group-hover:text-[#00ff9d] transition-colors" />
+
+                {/* Balance + Gas Notices */}
+                <div className="mt-2 flex flex-col gap-2">
+                  <div className="h-11 rounded-lg border border-white/10 bg-white/5 text-gray-400 flex items-center justify-center text-sm">
+                    Insufficient USDC balance
+                  </div>
+                  <div className="rounded-lg border border-white/10 bg-[#1a1d26]/80 p-3 text-xs text-gray-300 flex items-start gap-3">
+                    <div className="mt-[2px]">
+                      <ArrowDown className="h-4 w-4 text-[#00ff9d]" />
+                    </div>
+                    <div className="flex-1">
+                      Express and One-Click Trading are unavailable due to insufficient gas balance.
+                      <div className="mt-2 text-[#00ff9d] flex items-center gap-1 cursor-pointer hover:underline">
+                        Buy USDC, WETH or USDT
+                        <ChevronDown className="h-3 w-3 rotate-90" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Execution Details */}
+                <div className="flex items-center justify-between cursor-pointer group py-1" onClick={() => setIsExecDetailsOpen(!isExecDetailsOpen)}>
+                  <span className="text-gray-500 group-hover:text-[#00ff9d] transition-colors">Execution Details</span>
+                  <ChevronDown className={`h-4 w-4 text-gray-500 group-hover:text-[#00ff9d] transition-colors ${isExecDetailsOpen ? 'rotate-180' : ''}`} />
+                </div>
+
+                {isExecDetailsOpen && (
+                  <div className="flex flex-col gap-2.5 pl-0 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Fees</span>
+                      <span className="text-white">&lt;$0.01</span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1">
+                        <span className="text-gray-500">Network Fee</span>
+                        <Info className="h-3 w-3 text-gray-500" />
+                      </div>
+                      <span className="text-white">-$0.29</span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Collateral Spread</span>
+                      <span className="text-white">0.00%</span>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="flex items-center gap-1">
+                        <span className="text-gray-500">Allowed Slippage</span>
+                        <Info className="h-3 w-3 text-gray-500" />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded bg-white/5 px-2 py-0.5 text-xs text-gray-500 hover:text-white">-</button>
+                        <span className="text-white">1%</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {isWalletConnected ? <button disabled={!(hasPay && (orderType !== 'Limit' || hasLimitPrice))} className={`mt-4 w-full h-11 rounded-lg text-sm font-semibold transition-colors ${hasPay && (orderType !== 'Limit' || hasLimitPrice) ? 'bg-[#15F46F] text-[#06171E] hover:bg-[#12d160]' : 'bg-white/5 text-gray-500 cursor-not-allowed'}`}>
                     Trade
