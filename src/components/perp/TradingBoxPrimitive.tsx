@@ -641,23 +641,7 @@ export const TradingBoxPrimitive = ({
                   </button>
                 )}
 
-                {/* 5. Alerts */}
-                {orderType !== 'TPSL' && (
-                  <div className="flex flex-col gap-2">
-                    <div className="rounded-lg border border-white/10 bg-[#1a1d26]/80 p-3 text-xs text-gray-300 flex items-start gap-3">
-                      <div className="mt-[2px]">
-                        <ArrowDown className="h-4 w-4 text-[#00ff9d]" />
-                      </div>
-                      <div className="flex-1">
-                        Express and One-Click Trading are unavailable due to insufficient gas balance.
-                        <div className="mt-2 text-[#00ff9d] flex items-center gap-1 cursor-pointer hover:underline">
-                          Buy USDC, WETH or USDT
-                          <ChevronDown className="h-3 w-3 rotate-90" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                {/* 5. Alerts (removed for cleaner flow) */}
 
                 {/* 6. Liquidation Price */}
                 <div className="flex items-baseline justify-between">
