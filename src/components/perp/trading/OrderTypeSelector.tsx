@@ -15,6 +15,14 @@ export const OrderTypeSelector = ({
   isSwap
 }: OrderTypeSelectorProps) => {
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const moreLabel =
+    orderType === 'TPSL'
+      ? 'TP/SL'
+      : orderType === 'StopMarket'
+      ? 'Stop Market'
+      : orderType === 'TWAP'
+      ? 'TWAP'
+      : 'More';
 
   return (
     <div className="flex gap-1 text-[13px] relative">
@@ -69,7 +77,7 @@ export const OrderTypeSelector = ({
                 : 'text-gray-500 hover:text-white'
             }`}
           >
-            More <ChevronDown className="h-3 w-3" />
+            {moreLabel} <ChevronDown className="h-3 w-3" />
           </button>
           {showMoreMenu && (
             <div className="absolute z-30 mt-1 w-40 rounded-lg border border-white/10 bg-[#0f1117] shadow-lg">
