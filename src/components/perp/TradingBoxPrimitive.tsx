@@ -142,6 +142,85 @@ export const TradingBoxPrimitive = ({
         paddingBottom: '0px'
       };
 
+  const showLeverage = !isSwap && orderType !== 'TPSL';
+  const showTPSLSection = !isSwap && orderType !== 'TPSL';
+
+  const renderLimitPriceInput = () => (
+    <div className="rounded-lg border border-white/10 bg-[#15191e] p-4 transition-colors hover:bg-[#1a1d26]">
+      <div className="mb-2 flex justify-between text-xs text-gray-400">
+        <span>Limit Price</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <input
+          type="text"
+          inputMode="decimal"
+          placeholder="0.0"
+          value={limitPrice}
+          onChange={e => setLimitPrice(e.target.value)}
+          className="w-full min-w-0 bg-transparent text-2xl font-medium text-white placeholder-gray-600 outline-none"
+        />
+        <span className="text-sm text-gray-400">USD</span>
+      </div>
+    </div>
+  );
+
+  const renderSimplePriceInput = (label: string) => (
+    <div className="rounded-lg border border-white/10 bg-[#15191e] p-4 transition-colors hover:bg-[#1a1d26]">
+      <div className="mb-2 flex justify-between text-xs text-gray-400">
+        <span>{label}</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <input
+          type="text"
+          inputMode="decimal"
+          placeholder="0.0"
+          className="w-full min-w-0 bg-transparent text-2xl font-medium text-white placeholder-gray-600 outline-none"
+        />
+        <span className="text-sm text-gray-400">USD</span>
+      </div>
+    </div>
+  );
+
+  const renderTwapFields = (isSwapMode: boolean) => (
+    <div className="flex flex-col gap-3 rounded-lg border border-white/10 bg-[#15191e]/60 p-3">
+      <div className="flex items-center gap-2 text-xs text-gray-400">
+        Duration
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2 text-sm text-white flex items-center justify-between">
+          <span className="text-gray-400">Hour(s)</span>
+          <span>10</span>
+        </div>
+        <div className="rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2 text-sm text-white flex items-center justify-between">
+          <span className="text-gray-400">Minute(s)</span>
+          <span>0</span>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1 text-xs text-gray-400">
+        <span>Number of Parts</span>
+        <div className="rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2 text-sm text-white">5</div>
+      </div>
+
+      <div className="flex items-center justify-between text-xs text-gray-400">
+        <span>Frequency</span>
+        <span className="text-white">every 2 hours</span>
+      </div>
+
+      <div className="flex items-center justify-between text-xs text-gray-400">
+        <span>Size per part</span>
+        <span className="text-white">$0.00</span>
+      </div>
+
+      {isSwapMode && (
+        <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2 text-[12px] text-blue-100 flex items-start gap-2">
+          <span className="mt-[2px]">ℹ️</span>
+          <span>TWAP splits the order into parts over time to reduce impact.</span>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <>
       <div className={sheetWrapperClass} style={sheetWrapperStyle}>
@@ -229,58 +308,7 @@ export const TradingBoxPrimitive = ({
 
           {/* Inputs */}
           <div className="flex flex-col gap-1.5 relative">
-            <div className="relative">
-              <TokenInput
-                label={isSwap ? 'Pay' : 'Pay'}
-                value={payAmount}
-                onChange={val => setPayAmount(val)}
-                token={payToken}
-                onTokenClick={() => {
-                  setTokenSelectorFor('pay');
-                  setIsTokenSelectorOpen(true);
-                }}
-              />
-            </div>
-
-            {/* Swap Arrow - Positioned between Pay and Receive inputs */}
-            <div className="relative h-0 -my-2 z-10 flex items-center justify-center">
-              <button className="flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-[#0b0e11] bg-[#15191e] text-gray-400 shadow-lg hover:bg-[#1a1d26] hover:text-white transition-colors">
-                <ArrowDown className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="relative">
-              <TokenInput
-                label={isSwap ? 'Receive' : activeTab}
-                value={longAmount}
-                token={receiveToken}
-                onTokenClick={() => {
-                  setTokenSelectorFor('receive');
-                  setIsTokenSelectorOpen(true);
-                }}
-                subValue={!isSwap ? `${clampedLeverage.toFixed(2)}x` : undefined}
-                readOnly
-              />
-            </div>
-
-            {orderType === 'Limit' && (
-              <div className="rounded-lg border border-white/10 bg-[#15191e] p-4 transition-colors hover:bg-[#1a1d26]">
-                <div className="mb-2 flex justify-between text-xs text-gray-400">
-                  <span>Limit Price</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    placeholder="0.0"
-                    value={limitPrice}
-                    onChange={e => setLimitPrice(e.target.value)}
-                    className="w-full min-w-0 bg-transparent text-2xl font-medium text-white placeholder-gray-600 outline-none"
-                  />
-                  <span className="text-sm text-gray-400">USD</span>
-                </div>
-              </div>
-            )}
+            {renderInputs()}
           </div>
 
           {/* Leverage Slider (Hidden for Swap and TPSL) */}
