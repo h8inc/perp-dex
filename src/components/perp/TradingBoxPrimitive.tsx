@@ -283,8 +283,8 @@ export const TradingBoxPrimitive = ({
             )}
           </div>
 
-          {/* Leverage Slider (Hidden for Swap) */}
-          {!isSwap && (
+          {/* Leverage Slider (Hidden for Swap and TPSL) */}
+          {!isSwap && orderType !== 'TPSL' && (
             <LeverageSlider
               value={leverage}
               onChange={setLeverage}
@@ -414,6 +414,7 @@ export const TradingBoxPrimitive = ({
                 </div>
 
                 {/* 3. Take Profit / Stop Loss */}
+                {orderType !== 'TPSL' && (
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <span className="text-[13px] font-medium text-gray-500">Take Profit / Stop Loss</span>
@@ -606,6 +607,7 @@ export const TradingBoxPrimitive = ({
                     </div>
                   )}
                 </div>
+                )}
 
                 {/* 4. Action Button */}
                 {isWalletConnected ? (
@@ -629,20 +631,22 @@ export const TradingBoxPrimitive = ({
                 )}
 
                 {/* 5. Alerts */}
-                <div className="flex flex-col gap-2">
-                  <div className="rounded-lg border border-white/10 bg-[#1a1d26]/80 p-3 text-xs text-gray-300 flex items-start gap-3">
-                    <div className="mt-[2px]">
-                      <ArrowDown className="h-4 w-4 text-[#00ff9d]" />
-                    </div>
-                    <div className="flex-1">
-                      Express and One-Click Trading are unavailable due to insufficient gas balance.
-                      <div className="mt-2 text-[#00ff9d] flex items-center gap-1 cursor-pointer hover:underline">
-                        Buy USDC, WETH or USDT
-                        <ChevronDown className="h-3 w-3 rotate-90" />
+                {orderType !== 'TPSL' && (
+                  <div className="flex flex-col gap-2">
+                    <div className="rounded-lg border border-white/10 bg-[#1a1d26]/80 p-3 text-xs text-gray-300 flex items-start gap-3">
+                      <div className="mt-[2px]">
+                        <ArrowDown className="h-4 w-4 text-[#00ff9d]" />
+                      </div>
+                      <div className="flex-1">
+                        Express and One-Click Trading are unavailable due to insufficient gas balance.
+                        <div className="mt-2 text-[#00ff9d] flex items-center gap-1 cursor-pointer hover:underline">
+                          Buy USDC, WETH or USDT
+                          <ChevronDown className="h-3 w-3 rotate-90" />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 {/* 6. Liquidation Price */}
                 <div className="flex items-baseline justify-between">
