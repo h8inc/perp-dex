@@ -391,7 +391,7 @@ export const TradingBoxPrimitive = ({
                 {/* Order summary above Pool */}
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-500">
-                    {orderType === 'TPSL' ? 'TP/SL' : orderType}
+                    Market
                   </span>
                   <div className="flex items-center gap-1 text-white cursor-pointer">
                     <span>BTC/USD</span>
