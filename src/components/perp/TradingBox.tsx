@@ -124,6 +124,9 @@ export const TradingBox = ({
   const [isTokenSelectorOpen, setIsTokenSelectorOpen] = useState(false);
   const [tokenSelectorFor, setTokenSelectorFor] = useState<'pay' | 'receive'>('pay');
   const [tokenSearchQuery, setTokenSearchQuery] = useState('');
+  const [isTPSLEnabled, setIsTPSLEnabled] = useState(false);
+  const [takeProfitEntries, setTakeProfitEntries] = useState<Array<{ id: string; price: string; percentage: string }>>([]);
+  const [stopLossEntries, setStopLossEntries] = useState<Array<{ id: string; price: string; percentage: string }>>([]);
   const sliderRef = useRef<HTMLDivElement | null>(null);
 
   const handleSelectToken = (token: Token) => {
@@ -415,6 +418,205 @@ export const TradingBox = ({
                 </div>
               </div>
             </div>}
+
+          {/* Take Profit / Stop Loss Section */}
+          {!isSwap && (
+            <div className="mt-4 flex flex-col gap-3">
+              {/* Header with Toggle */}
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] font-medium text-[#00ff9d]">Take Profit / Stop Loss</span>
+                <button
+                  onClick={() => {
+                    const newEnabled = !isTPSLEnabled;
+                    setIsTPSLEnabled(newEnabled);
+                    if (newEnabled && takeProfitEntries.length === 0 && stopLossEntries.length === 0) {
+                      // Auto-create one entry for each when enabling
+                      setTakeProfitEntries([{ id: `tp-${Date.now()}`, price: '', percentage: '100' }]);
+                      setStopLossEntries([{ id: `sl-${Date.now()}`, price: '', percentage: '100' }]);
+                    } else if (!newEnabled) {
+                      // Clear entries when disabling
+                      setTakeProfitEntries([]);
+                      setStopLossEntries([]);
+                    }
+                  }}
+                  className={`relative h-6 w-11 rounded-full transition-colors ${
+                    isTPSLEnabled ? 'bg-[#00ff9d]' : 'bg-white/10'
+                  }`}
+                  role="switch"
+                  aria-checked={isTPSLEnabled}
+                >
+                  <span
+                    className={`absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-white transition-transform ${
+                      isTPSLEnabled ? 'translate-x-6 left-1' : 'translate-x-0 left-1'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {isTPSLEnabled && (
+                <div className="flex flex-col gap-3">
+                  {/* Take Profit Section */}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-400">Take Profit</span>
+                      <button
+                        onClick={() => {
+                          const newId = `tp-${Date.now()}`;
+                          setTakeProfitEntries([...takeProfitEntries, { id: newId, price: '', percentage: '100' }]);
+                        }}
+                        className="h-6 w-6 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                      >
+                        <span className="text-gray-400 text-xs font-medium">+</span>
+                      </button>
+                    </div>
+                    
+                    {takeProfitEntries.length === 0 ? (
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                          <button className="h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10">
+                            <span className="text-gray-400 text-xs">$</span>
+                          </button>
+                          <input
+                            type="text"
+                            placeholder="Price"
+                            className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs placeholder-gray-500 outline-none focus:border-[#00ff9d]/50"
+                            disabled
+                          />
+                          <button className="h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-gray-400 text-xs">
+                            100%
+                          </button>
+                          <button className="h-8 w-8 rounded bg-red-500/20 flex items-center justify-center opacity-50 cursor-not-allowed">
+                            <X className="h-3 w-3 text-white" />
+                          </button>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-400">Take Profit PnL</span>
+                          <span className="text-gray-400">-</span>
+                        </div>
+                      </div>
+                    ) : (
+                      takeProfitEntries.map((entry, index) => (
+                        <div key={entry.id} className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <button className="h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10">
+                              <span className="text-gray-400 text-xs">$</span>
+                            </button>
+                            <input
+                              type="text"
+                              placeholder="Price"
+                              value={entry.price}
+                              onChange={(e) => {
+                                const updated = [...takeProfitEntries];
+                                updated[index].price = e.target.value;
+                                setTakeProfitEntries(updated);
+                              }}
+                              className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs placeholder-gray-500 outline-none focus:border-[#00ff9d]/50"
+                            />
+                            <button className="h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 text-xs">
+                              {entry.percentage}%
+                            </button>
+                            <button
+                              onClick={() => {
+                                setTakeProfitEntries(takeProfitEntries.filter((_, i) => i !== index));
+                              }}
+                              className="h-8 w-8 rounded bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors"
+                            >
+                              <X className="h-3 w-3 text-white" />
+                            </button>
+                          </div>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-gray-400">Take Profit PnL</span>
+                            <span className="text-gray-400">-</span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  {/* Separator */}
+                  <div className="h-px bg-white/10" />
+
+                  {/* Stop Loss Section */}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-400">Stop Loss</span>
+                      <button
+                        onClick={() => {
+                          const newId = `sl-${Date.now()}`;
+                          setStopLossEntries([...stopLossEntries, { id: newId, price: '', percentage: '100' }]);
+                        }}
+                        className="h-6 w-6 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                      >
+                        <span className="text-gray-400 text-xs font-medium">+</span>
+                      </button>
+                    </div>
+                    
+                    {stopLossEntries.length === 0 ? (
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                          <button className="h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10">
+                            <span className="text-gray-400 text-xs">$</span>
+                          </button>
+                          <input
+                            type="text"
+                            placeholder="Price"
+                            className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs placeholder-gray-500 outline-none focus:border-[#00ff9d]/50"
+                            disabled
+                          />
+                          <button className="h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-gray-400 text-xs">
+                            100%
+                          </button>
+                          <button className="h-8 w-8 rounded bg-red-500/20 flex items-center justify-center opacity-50 cursor-not-allowed">
+                            <X className="h-3 w-3 text-white" />
+                          </button>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-400">Stop Loss PnL</span>
+                          <span className="text-gray-400">-</span>
+                        </div>
+                      </div>
+                    ) : (
+                      stopLossEntries.map((entry, index) => (
+                        <div key={entry.id} className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <button className="h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10">
+                              <span className="text-gray-400 text-xs">$</span>
+                            </button>
+                            <input
+                              type="text"
+                              placeholder="Price"
+                              value={entry.price}
+                              onChange={(e) => {
+                                const updated = [...stopLossEntries];
+                                updated[index].price = e.target.value;
+                                setStopLossEntries(updated);
+                              }}
+                              className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs placeholder-gray-500 outline-none focus:border-[#00ff9d]/50"
+                            />
+                            <button className="h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 text-xs">
+                              {entry.percentage}%
+                            </button>
+                            <button
+                              onClick={() => {
+                                setStopLossEntries(stopLossEntries.filter((_, i) => i !== index));
+                              }}
+                              className="h-8 w-8 rounded bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors"
+                            >
+                              <X className="h-3 w-3 text-white" />
+                            </button>
+                          </div>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-gray-400">Stop Loss PnL</span>
+                            <span className="text-gray-400">-</span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Footer Info Area */}
           <div className={`mt-4 flex flex-col gap-2.5 rounded-lg p-1 text-[13px] ${isSwap ? 'min-h-[180px]' : ''}`}>
