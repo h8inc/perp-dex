@@ -1,5 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine } from 'recharts';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { ChevronDown, Settings, Maximize2, Share2, Camera, Layout, Search, Bell, Menu, Wallet, ArrowUpDown, Plus, Minus, MoreHorizontal, X, Info, History, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
@@ -86,6 +85,129 @@ const TIME_FRAMES = ['1m', '15m', '30m', '1h', '4h', 'D', 'W'];
 const TABS_BOTTOM = ['Account', 'Balances', 'Positions', 'Orders', 'TWAP', 'Trades', 'Funding', 'Realized PnL', 'Orders History', 'Transfers'];
 
 // --- Components ---
+
+const CandlestickChart = ({ data }: { data: Array<{ time: number; price: number; volume: number; ma7: number; ma25: number }> }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        setDimensions({
+          width: containerRef.current.offsetWidth,
+          height: containerRef.current.offsetHeight
+        });
+      }
+    };
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+  // Convert price data to OHLC (simplified - using price as close, generating OHLC)
+  const ohlcData = useMemo(() => {
+    return data.map((d, i) => {
+      const open = i === 0 ? d.price : data[i - 1].price;
+      const close = d.price;
+      const high = Math.max(open, close) + Math.random() * 50;
+      const low = Math.min(open, close) - Math.random() * 50;
+      return { ...d, open, high, low, close };
+    });
+  }, [data]);
+
+  if (dimensions.width === 0 || dimensions.height === 0) {
+    return <div ref={containerRef} className="w-full h-full" />;
+  }
+
+  const padding = { top: 20, right: 40, bottom: 20, left: 20 };
+  const chartWidth = dimensions.width - padding.left - padding.right;
+  const chartHeight = dimensions.height - padding.top - padding.bottom;
+  const candleWidth = chartWidth / ohlcData.length * 0.8;
+  const candleGap = chartWidth / ohlcData.length * 0.2;
+
+  const allPrices = ohlcData.flatMap(d => [d.high, d.low]);
+  const minPrice = Math.min(...allPrices);
+  const maxPrice = Math.max(...allPrices);
+  const priceRange = maxPrice - minPrice || 1;
+
+  const priceToY = (price: number) => {
+    return chartHeight - ((price - minPrice) / priceRange) * chartHeight;
+  };
+
+  return (
+    <div ref={containerRef} className="w-full h-full">
+      <svg width={dimensions.width} height={dimensions.height} className="w-full h-full">
+        {/* Grid lines */}
+        {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+          const y = padding.top + ratio * chartHeight;
+          return (
+            <line
+              key={ratio}
+              x1={padding.left}
+              y1={y}
+              x2={padding.left + chartWidth}
+              y2={y}
+              stroke="#ffffff10"
+              strokeDasharray="3 3"
+            />
+          );
+        })}
+
+        {/* Y-axis labels */}
+        {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+          const price = minPrice + (1 - ratio) * priceRange;
+          const y = padding.top + ratio * chartHeight;
+          return (
+            <text
+              key={ratio}
+              x={padding.left + chartWidth + 8}
+              y={y + 4}
+              fill="#6b7280"
+              fontSize="10"
+              textAnchor="start"
+            >
+              {price.toFixed(0)}
+            </text>
+          );
+        })}
+
+        {/* Candlesticks */}
+        {ohlcData.map((d, i) => {
+          const x = padding.left + i * (candleWidth + candleGap) + candleGap / 2;
+          const isBullish = d.close >= d.open;
+          const bodyTop = priceToY(Math.max(d.open, d.close));
+          const bodyBottom = priceToY(Math.min(d.open, d.close));
+          const bodyHeight = Math.max(1, bodyBottom - bodyTop);
+          const wickTop = priceToY(d.high);
+          const wickBottom = priceToY(d.low);
+
+          return (
+            <g key={i}>
+              {/* Wick */}
+              <line
+                x1={x + candleWidth / 2}
+                y1={wickTop}
+                x2={x + candleWidth / 2}
+                y2={wickBottom}
+                stroke={isBullish ? '#00ff9d' : '#ff4d4d'}
+                strokeWidth="1"
+              />
+              {/* Body */}
+              <rect
+                x={x}
+                y={bodyTop}
+                width={candleWidth}
+                height={bodyHeight}
+                fill={isBullish ? '#00ff9d' : '#ff4d4d'}
+                stroke={isBullish ? '#00ff9d' : '#ff4d4d'}
+              />
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+};
 
 const Header = ({
   isWalletConnected,
@@ -348,34 +470,9 @@ const ChartSection = () => {
               </div>
             </div>
           
-          <ResponsiveContainer width="100%" height="90%">
-            <AreaChart data={chartData}>
-              <defs>
-                <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#00ff9d" stopOpacity={0.1} />
-                  <stop offset="95%" stopColor="#00ff9d" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-              <XAxis dataKey="time" hide />
-              <YAxis orientation="right" domain={['auto', 'auto']} tick={{
-              fill: '#6b7280',
-              fontSize: 10
-            }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{
-              backgroundColor: '#1f2937',
-              borderColor: '#374151',
-              color: '#fff'
-            }} itemStyle={{
-              color: '#fff'
-            }} labelStyle={{
-              display: 'none'
-            }} />
-              <Area type="monotone" dataKey="price" stroke="#00ff9d" fillOpacity={1} fill="url(#colorPrice)" strokeWidth={2} />
-              <Line type="monotone" dataKey="ma7" stroke="#3b82f6" strokeWidth={1} dot={false} strokeOpacity={0.5} />
-               <Line type="monotone" dataKey="ma25" stroke="#eab308" strokeWidth={1} dot={false} strokeOpacity={0.5} />
-            </AreaChart>
-          </ResponsiveContainer>
+          <div className="w-full h-[90%]">
+            <CandlestickChart data={chartData} />
+          </div>
         </div>
         
         {/* Floating Tools (Left Side) */}
