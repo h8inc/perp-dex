@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine } from 'recharts';
-import { ChevronDown, Settings, Maximize2, Share2, Camera, Layout, Search, Bell, Menu, Wallet, ArrowUpDown, Plus, Minus, MoreHorizontal, Info, History, Clock } from 'lucide-react';
+import { ChevronDown, Settings, Maximize2, Share2, Camera, Layout, Search, Bell, Menu, Wallet, ArrowUpDown, Plus, Minus, MoreHorizontal, X, Info, History, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { TradingBoxPrimitive } from './TradingBoxPrimitive';
@@ -96,8 +96,10 @@ const Header = ({
   onConnect: () => void;
   onDisconnect: () => void;
 }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const navigationLinks = ['Trade', 'Portfolio', 'Vault', 'Funding', 'Refer', 'Points', 'Leaderboard', 'More'];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -115,53 +117,115 @@ const Header = ({
   }, [lastScrollY]);
 
   return (
-    <motion.header
-      initial={{ y: 0 }}
-      animate={{ y: isVisible ? 0 : -72 }}
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
-      className="fixed top-0 left-0 right-0 z-50 flex h-[72px] items-center justify-between border-b border-white/10 backdrop-blur-md bg-[#0b0e11]/80 px-4 sm:px-6 md:px-8 text-sm font-medium text-gray-400"
-    >
-      {/* Navigation Links on Left */}
-      <nav className="hidden md:flex items-center gap-4">
-        <a href="#" className="text-white hover:text-[#00ff9d]">Trade</a>
-        <a href="#" className="hover:text-white">Portfolio</a>
-        <a href="#" className="hover:text-white">Vault</a>
-        <a href="#" className="hover:text-white">Funding</a>
-        <a href="#" className="hover:text-white">Refer</a>
-        <a href="#" className="hover:text-white">Points</a>
-        <a href="#" className="hover:text-white">Leaderboard</a>
-        <a href="#" className="hover:text-white">More</a>
-      </nav>
-
-      {/* Logo in Center */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center select-none">
-        <img 
-          src="/logo.svg" 
-          alt="Extended" 
-          className="h-6 w-auto"
-        />
-      </div>
-
-      {/* Right: Buttons */}
-      <div className="flex items-center gap-3">
-        <div className="hidden md:flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" style={{
-          display: "none"
-        }}></span>
-          <span className="text-xs text-green-500" style={{
-          display: "none"
-        }}>Connected</span>
+    <>
+      <motion.header
+        initial={{ y: 0 }}
+        animate={{ y: isVisible ? 0 : -72 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className="fixed top-0 left-0 right-0 z-50 flex h-[72px] items-center justify-between border-b border-white/10 backdrop-blur-md bg-[#0b0e11]/80 px-4 sm:px-6 md:px-8 text-sm font-medium text-gray-400"
+      >
+        {/* Mobile: Logo on Left */}
+        <div className="md:hidden flex items-center select-none">
+          <img 
+            src="/logo.svg" 
+            alt="Extended" 
+            className="h-5 w-auto"
+          />
         </div>
-        <button className="p-2 hover:bg-white/5 rounded-full"><Bell size={16} /></button>
-        <button className="p-2 hover:bg-white/5 rounded-full"><Settings size={16} /></button>
-        {!isWalletConnected ? <button onClick={onConnect} className="flex items-center gap-2 bg-[#15F46F] hover:bg-[#12d160] text-[#06171E] px-4 h-9 rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0">
-            <Wallet size={14} />
-            Connect Wallet
-          </button> : <button onClick={onDisconnect} className="flex items-center gap-2 px-3 h-9 rounded-lg text-sm font-medium text-white border border-white/10 hover:border-white/30 hover:bg-white/5 transition-colors cursor-pointer shrink-0">
-            Switch to guest
-          </button>}
-      </div>
-    </motion.header>
+
+        {/* Desktop: Navigation Links on Left */}
+        <nav className="hidden md:flex items-center gap-8">
+          {navigationLinks.map(link => (
+            <a key={link} href="#" className={`text-sm font-medium transition-colors ${link === 'Trade' ? 'text-white hover:text-[#00ff9d]' : 'text-[#A0A0A0] hover:text-white'}`}>
+              {link}
+            </a>
+          ))}
+        </nav>
+
+        {/* Desktop: Logo in Center */}
+        <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center select-none">
+          <img 
+            src="/logo.svg" 
+            alt="Extended" 
+            className="h-6 w-auto"
+          />
+        </div>
+
+        {/* Right: Mobile - Hamburger Menu + Buttons */}
+        <div className="md:hidden flex items-center gap-2">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="p-2 text-white hover:text-[#15F46F] transition-colors bg-white/5 hover:bg-white/10 rounded-lg"
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <MoreHorizontal className="w-5 h-5" />
+            )}
+          </button>
+          <button className="p-2 hover:bg-white/5 rounded-full"><Bell size={16} /></button>
+          {!isWalletConnected ? (
+            <button onClick={onConnect} className="flex items-center gap-2 bg-[#15F46F] hover:bg-[#12d160] text-[#06171E] px-4 py-2 rounded-lg text-xs font-medium transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
+              <Wallet size={14} />
+              Connect
+            </button>
+          ) : (
+            <button onClick={onDisconnect} className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-white border border-white/10 hover:border-white/30 hover:bg-white/5 transition-colors cursor-pointer shrink-0">
+              Guest
+            </button>
+          )}
+        </div>
+
+        {/* Right: Desktop - Buttons */}
+        <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" style={{
+            display: "none"
+          }}></span>
+            <span className="text-xs text-green-500" style={{
+            display: "none"
+          }}>Connected</span>
+          </div>
+          <button className="p-2 hover:bg-white/5 rounded-full"><Bell size={16} /></button>
+          <button className="p-2 hover:bg-white/5 rounded-full"><Settings size={16} /></button>
+          {!isWalletConnected ? (
+            <button onClick={onConnect} className="flex items-center gap-2 bg-[#15F46F] hover:bg-[#12d160] text-[#06171E] px-6 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
+              <Wallet size={14} />
+              Connect Wallet
+            </button>
+          ) : (
+            <button onClick={onDisconnect} className="flex items-center gap-2 px-3 h-9 rounded-lg text-sm font-medium text-white border border-white/10 hover:border-white/30 hover:bg-white/5 transition-colors cursor-pointer shrink-0">
+              Switch to guest
+            </button>
+          )}
+        </div>
+      </motion.header>
+
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            onClick={() => setIsMenuOpen(false)}
+          />
+          <div className="fixed top-[72px] left-0 right-0 z-50 bg-[#0b0e11] border-b border-white/10 md:hidden">
+            <div className="flex flex-col">
+              {navigationLinks.map(link => (
+                <a
+                  key={link}
+                  href="#"
+                  className="px-6 py-4 text-sm font-medium text-[#A0A0A0] hover:text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-b-0"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {link}
+                </a>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 };
 const MarketTicker = () => <div className="flex h-14 items-center gap-6 border-b border-white/10 bg-[#0b0e11] px-4 text-xs overflow-x-auto no-scrollbar">
