@@ -416,7 +416,7 @@ export const TradingBoxPrimitive = ({
                 {/* 3. Take Profit / Stop Loss */}
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-[13px] font-medium text-[#00ff9d]">Take Profit / Stop Loss</span>
+                    <span className="text-[13px] font-medium text-gray-500">Take Profit / Stop Loss</span>
                     <button
                       onClick={() => {
                         const newEnabled = !isTPSLEnabled;
