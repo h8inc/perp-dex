@@ -388,6 +388,17 @@ export const TradingBoxPrimitive = ({
             ) : (
               // Long/Short Footer Content (reordered)
               <div className="flex flex-col gap-3">
+                {/* Order summary above Pool */}
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">
+                    {orderType === 'TPSL' ? 'TP/SL' : orderType}
+                  </span>
+                  <div className="flex items-center gap-1 text-white cursor-pointer">
+                    <span>BTC/USD</span>
+                    <ChevronDown className="h-4 w-4 text-gray-400" />
+                  </div>
+                </div>
+
                 {/* 1. Pool */}
                 <div className="flex items-baseline justify-between">
                   <span className="text-gray-500">Pool</span>
