@@ -630,9 +630,6 @@ export const TradingBoxPrimitive = ({
 
                 {/* 5. Alerts */}
                 <div className="flex flex-col gap-2">
-                  <div className="h-11 rounded-lg border border-white/10 bg-white/5 text-gray-400 flex items-center justify-center text-sm">
-                    Insufficient USDC balance
-                  </div>
                   <div className="rounded-lg border border-white/10 bg-[#1a1d26]/80 p-3 text-xs text-gray-300 flex items-start gap-3">
                     <div className="mt-[2px]">
                       <ArrowDown className="h-4 w-4 text-[#00ff9d]" />
