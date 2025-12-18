@@ -126,14 +126,14 @@ export const TradingBoxPrimitive = ({
   };
 
   const sheetWrapperClass = isMobileSheet
-    ? 'w-full bg-[#0b0e11] border-t border-white/10 font-sans antialiased shadow-2xl transition-transform duration-300 h-[88vh] max-h-[88vh] flex flex-col'
+    ? 'w-full bg-[#0b0e11] border-t border-white/10 font-sans antialiased shadow-2xl transition-transform duration-300 h-[80vh] max-h-[80vh] flex flex-col'
     : 'flex w-full items-start justify-center bg-[#0b0e11] font-sans antialiased h-full';
 
   const sheetWrapperStyle = isMobileSheet
     ? { 
         transform: isSheetOpen ? 'translateY(0)' : 'translateY(calc(100% - 56px))',
-        height: isSheetOpen ? '88vh' : '56px',
-        maxHeight: isSheetOpen ? '88vh' : '56px'
+        height: isSheetOpen ? '80vh' : '56px',
+        maxHeight: isSheetOpen ? '80vh' : '56px'
       }
     : {
         paddingLeft: '0px',
