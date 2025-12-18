@@ -40,6 +40,20 @@ const POPULAR_TOKENS = [{
   name: "WETH",
   icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=026"
 }] as any[];
+
+const DEPOSIT_TOKENS = [{
+  symbol: "USDC",
+  name: "USDC",
+  icon: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=026"
+}, {
+  symbol: "ETH",
+  name: "ETH",
+  icon: "https://token-icons.s3.amazonaws.com/eth.png"
+}, {
+  symbol: "wstETH",
+  name: "wstETH",
+  icon: "https://assets.coingecko.com/coins/images/18834/large/wstETH.png"
+}] as any[];
 const TOKEN_LIST = [{
   symbol: "ETH",
   name: "Ethereum",
@@ -75,7 +89,7 @@ export const CryptoSwapWidget = () => {
   const [sellAmount, setSellAmount] = useState<string>('');
   const [isTokenSelectorOpen, setIsTokenSelectorOpen] = useState(false);
   const [selectorFor, setSelectorFor] = useState<'sell' | 'receive'>('sell');
-  const [buyToken, setBuyToken] = useState<TokenData>(() => POPULAR_TOKENS.find(t => t.symbol === "USDC") || POPULAR_TOKENS[0]);
+  const [buyToken, setBuyToken] = useState<TokenData>(() => DEPOSIT_TOKENS.find(t => t.symbol === "USDC") || DEPOSIT_TOKENS[0]);
   const [selectedNetwork, setSelectedNetwork] = useState<Network>({
     id: 'ethereum',
     name: 'Ethereum',
@@ -256,8 +270,8 @@ export const CryptoSwapWidget = () => {
         isOpen={isTokenSelectorOpen}
         onClose={() => setIsTokenSelectorOpen(false)}
         onSelectToken={handleSelectToken}
-        availableTokens={TOKEN_LIST}
-        popularTokens={POPULAR_TOKENS}
+        availableTokens={selectorFor === 'sell' ? DEPOSIT_TOKENS : TOKEN_LIST}
+        popularTokens={selectorFor === 'sell' ? DEPOSIT_TOKENS : POPULAR_TOKENS}
         listTitle="Tokens by 24H volume"
         networks={networks}
         selectedNetwork={selectedNetwork}
