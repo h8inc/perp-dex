@@ -165,7 +165,10 @@ export const CryptoSwapWidgetPrimitive = ({
             className="w-full bg-transparent text-4xl font-normal text-white placeholder-white/20 outline-none border-none p-0 m-0"
           />
           
-          <button className="flex items-center gap-2 bg-[#131313] border border-[#393939] hover:border-[#505050] hover:bg-[#1a1a1a] rounded-full py-1 pl-1 pr-3 shadow-sm transition-all cursor-pointer shrink-0 h-[36px]">
+          <button
+            onClick={() => setIsTokenSelectorOpen(true)}
+            className="flex items-center gap-2 bg-[#131313] border border-[#393939] hover:border-[#505050] hover:bg-[#1a1a1a] rounded-full py-1 pl-1 pr-3 shadow-sm transition-all cursor-pointer shrink-0 h-[36px]"
+          >
             <div className="w-[28px] h-[28px] rounded-full bg-white flex items-center justify-center overflow-hidden">
               <img
                 src={ETH_ICON}
