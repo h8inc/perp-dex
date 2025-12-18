@@ -74,36 +74,36 @@ export const TradingBoxPrimitive = ({
   
   // Available networks with logos
   const networks = [
-    { 
-      id: 'ethereum', 
-      name: 'Ethereum',
+    {
+      id: 'ethereum',
+      name: 'Ethereum (mainnet)',
       icon: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png'
     },
-    { 
-      id: 'arbitrum', 
+    {
+      id: 'arbitrum',
       name: 'Arbitrum',
       icon: 'https://assets.coingecko.com/coins/images/16547/large/photo_2023-03-29_21.47.00.jpeg'
     },
-    { 
-      id: 'polygon', 
-      name: 'Polygon',
-      icon: 'https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png'
-    },
-    { 
-      id: 'base', 
-      name: 'Base',
-      icon: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/base/info/logo.png'
-    },
-    { 
-      id: 'optimism', 
+    {
+      id: 'optimism',
       name: 'Optimism',
       icon: 'https://assets.coingecko.com/coins/images/25244/large/Optimism.png'
     },
-    { 
-      id: 'starknet', 
-      name: 'Starknet',
-      icon: 'https://logo.svgcdn.com/token-branded/starknet.svg'
+    {
+      id: 'base',
+      name: 'Base',
+      icon: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/base/info/logo.png'
     },
+    {
+      id: 'polygon',
+      name: 'Polygon',
+      icon: 'https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png'
+    },
+    {
+      id: 'avalanche',
+      name: 'Avalanche (C-Chain)',
+      icon: 'https://assets.coingecko.com/coins/images/12559/large/coin-round-red.png'
+    }
   ];
 
   const isSwap = activeTab === 'Swap';
