@@ -85,6 +85,7 @@ export const CryptoSwapWidgetPrimitive = ({
 }: CryptoSwapWidgetPrimitiveProps = {}) => {
   const [sellAmount, setSellAmount] = useState<string>('');
   const [isTokenSelectorOpen, setIsTokenSelectorOpen] = useState(false);
+  const [selectorFor, setSelectorFor] = useState<'sell' | 'receive'>('sell');
   const [buyToken, setBuyToken] = useState<TokenData>(() => POPULAR_TOKENS.find(t => t.symbol === "USDC") || POPULAR_TOKENS[0]);
   const [selectedNetwork, setSelectedNetwork] = useState<Network>({
     id: 'ethereum',
@@ -166,7 +167,10 @@ export const CryptoSwapWidgetPrimitive = ({
           />
           
           <button
-            onClick={() => setIsTokenSelectorOpen(true)}
+            onClick={() => {
+              setSelectorFor('sell');
+              setIsTokenSelectorOpen(true);
+            }}
             className="flex items-center gap-2 bg-[#131313] border border-[#393939] hover:border-[#505050] hover:bg-[#1a1a1a] rounded-full py-1 pl-1 pr-3 shadow-sm transition-all cursor-pointer shrink-0 h-[36px]"
           >
             <div className="w-[28px] h-[28px] rounded-full bg-white flex items-center justify-center overflow-hidden">
@@ -238,8 +242,11 @@ export const CryptoSwapWidgetPrimitive = ({
           />
           
           <button
-            onClick={() => setIsTokenSelectorOpen(true)}
-            className="flex items-center gap-2 bg-[#131313] border border-[#393939] hover:border-[#505050] hover:bg-[#1a1a1a] rounded-full py-1 pl-1 pr-3 shadow-sm transition-all cursor-pointer shrink-0 h-[36px]"
+            onClick={() => {
+              setSelectorFor('receive');
+              setIsTokenSelectorOpen(true);
+            }}
+            className="flex items_center gap-2 bg-[#131313] border border-[#393939] hover:border-[#505050] hover:bg-[#1a1a1a] rounded-full py-1 pl-1 pr-3 shadow-sm transition-all cursor-pointer shrink-0 h-[36px]"
           >
             <div className="w-[28px] h-[28px] rounded-full bg-white flex items-center justify-center overflow-hidden">
               <img
@@ -293,7 +300,7 @@ export const CryptoSwapWidgetPrimitive = ({
         networks={networks}
         selectedNetwork={selectedNetwork}
         onNetworkChange={setSelectedNetwork}
-        showNetworks={false}
+        showNetworks={selectorFor === 'sell'}
       />
     </div>
   );

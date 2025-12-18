@@ -74,6 +74,7 @@ const TOKEN_LIST = [{
 export const CryptoSwapWidget = () => {
   const [sellAmount, setSellAmount] = useState<string>('');
   const [isTokenSelectorOpen, setIsTokenSelectorOpen] = useState(false);
+  const [selectorFor, setSelectorFor] = useState<'sell' | 'receive'>('sell');
   const [buyToken, setBuyToken] = useState<TokenData>(() => POPULAR_TOKENS.find(t => t.symbol === "USDC") || POPULAR_TOKENS[0]);
   const [selectedNetwork, setSelectedNetwork] = useState<Network>({
     id: 'ethereum',
@@ -145,7 +146,13 @@ export const CryptoSwapWidget = () => {
               }
             }} className="w-full bg-transparent text-4xl font-normal text-white placeholder-white/20 outline-none border-none p-0 m-0" />
             
-            <button className="flex items-center gap-2 bg-[#131313] border border-[#393939] hover:border-[#505050] hover:bg-[#1a1a1a] rounded-full py-1 pl-1 pr-3 shadow-sm transition-all cursor-pointer shrink-0 h-[36px]">
+            <button
+              onClick={() => {
+                setSelectorFor('sell');
+                setIsTokenSelectorOpen(true);
+              }}
+              className="flex items-center gap-2 bg-[#131313] border border-[#393939] hover:border-[#505050] hover:bg-[#1a1a1a] rounded-full py-1 pl-1 pr-3 shadow-sm transition-all cursor-pointer shrink-0 h-[36px]"
+            >
               <div className="w-[28px] h-[28px] rounded-full bg-white flex items-center justify-center overflow-hidden">
                 <img src={ETH_ICON} alt="ETH" className="w-full h-full object-cover" onError={e => {
                   (e.target as HTMLImageElement).src = "https://placehold.co/28x28/333/FFF?text=E";
@@ -196,7 +203,13 @@ export const CryptoSwapWidget = () => {
           <div className="flex items-center justify-between gap-4">
             <input type="text" placeholder="0" readOnly value={hasAmount ? (parseFloat(sellAmount) * 2450.50).toFixed(2) : ''} className="w-full bg-transparent text-4xl font-normal text-white placeholder-white/20 outline-none border-none p-0 m-0 cursor-default" />
             
-            <button onClick={() => setIsTokenSelectorOpen(true)} className="flex items-center gap-2 bg-[#131313] border border-[#393939] hover:border-[#505050] hover:bg-[#1a1a1a] rounded-full py-1 pl-1 pr-3 shadow-sm transition-all cursor-pointer shrink-0 h-[36px]">
+            <button
+              onClick={() => {
+                setSelectorFor('receive');
+                setIsTokenSelectorOpen(true);
+              }}
+              className="flex items-center gap-2 bg-[#131313] border border-[#393939] hover:border-[#505050] hover:bg-[#1a1a1a] rounded-full py-1 pl-1 pr-3 shadow-sm transition-all cursor-pointer shrink-0 h-[36px]"
+            >
               <div className="w-[28px] h-[28px] rounded-full bg-white flex items-center justify-center overflow-hidden">
                 <img src={buyToken?.icon} alt={buyToken?.symbol} className="w-full h-full object-cover" onError={e => {
                   (e.target as HTMLImageElement).src = "https://placehold.co/28x28/333/FFF?text=AS";
@@ -249,7 +262,7 @@ export const CryptoSwapWidget = () => {
         networks={networks}
         selectedNetwork={selectedNetwork}
         onNetworkChange={setSelectedNetwork}
-        showNetworks={false}
+        showNetworks={selectorFor === 'sell'}
       />
 
       </div>
