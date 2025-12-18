@@ -127,7 +127,7 @@ export const TradingBoxPrimitive = ({
   };
 
   const sheetWrapperClass = isMobileSheet
-    ? 'relative z-50 w-full bg-[#0b0e11] border-t border-white/10 font-sans antialiased shadow-2xl transition-transform duration-300 h-[80vh] max-h-[80vh] flex flex-col'
+    ? 'relative z-50 w-full bg-[#0b0e11] border-t border-white/10 font-sans antialiased shadow-2xl transition-transform duration-500 ease-out h-[80vh] max-h-[80vh] flex flex-col'
     : 'relative flex w-full items-start justify-center bg-[#0b0e11] font-sans antialiased h-full';
 
   const sheetWrapperStyle = isMobileSheet
@@ -148,9 +148,9 @@ export const TradingBoxPrimitive = ({
   const dragProps = isMobileSheet
     ? {
         drag: 'y' as const,
-        dragConstraints: { top: 0, bottom: 140 },
-        dragElastic: 0.2,
-        dragMomentum: false,
+        dragConstraints: { top: 0, bottom: 200 },
+        dragElastic: 0.4,
+        dragMomentum: true,
         onDragEnd: (_: any, info: { offset: { y: number } }) => {
           if (info.offset.y > 80 && onToggleSheet) onToggleSheet();
         }
