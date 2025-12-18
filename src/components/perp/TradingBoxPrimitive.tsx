@@ -128,7 +128,7 @@ export const TradingBoxPrimitive = ({
   };
 
   const sheetWrapperClass = isMobileSheet
-    ? 'w-full bg-[#0b0e11] border-t border-white/10 font-sans antialiased shadow-2xl transition-transform duration-300 h-[80vh] max-h-[80vh] flex flex-col'
+    ? 'z-50 w-full bg-[#0b0e11] border-t border-white/10 font-sans antialiased shadow-2xl transition-transform duration-300 h-[80vh] max-h-[80vh] flex flex-col'
     : 'flex w-full items-start justify-center bg-[#0b0e11] font-sans antialiased h-full';
 
   const sheetWrapperStyle = isMobileSheet
@@ -342,7 +342,7 @@ export const TradingBoxPrimitive = ({
     <>
       {/* Mobile backdrop with blur when sheet is open */}
       {isMobileSheet && isSheetOpen && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden" />
+        <div className="fixed inset-0 bg-black/25 backdrop-blur-[2px] z-40 md:hidden" />
       )}
 
       <div className={sheetWrapperClass} style={sheetWrapperStyle}>
