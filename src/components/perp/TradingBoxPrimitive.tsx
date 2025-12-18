@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { ChevronDown, ChevronUp, Settings, Info, ArrowDown, X } from 'lucide-react';
 import { TokenInput, type Token } from './trading/TokenInput';
 import { TradingTabs } from './trading/TradingTabs';
@@ -63,8 +64,6 @@ export const TradingBoxPrimitive = ({
   const [isTPSLEnabled, setIsTPSLEnabled] = useState(false);
   const [takeProfitEntries, setTakeProfitEntries] = useState<Array<{ id: string; price: string; percentage: string }>>([]);
   const [stopLossEntries, setStopLossEntries] = useState<Array<{ id: string; price: string; percentage: string }>>([]);
-  const [touchStartY, setTouchStartY] = useState<number | null>(null);
-  const [touchDeltaY, setTouchDeltaY] = useState(0);
   
   // Network selection state
   const [selectedNetwork, setSelectedNetwork] = useState<{ id: string; name: string; icon?: string } | undefined>({
@@ -146,6 +145,17 @@ export const TradingBoxPrimitive = ({
 
   const showLeverage = !isSwap && orderType !== 'TPSL';
   const showTPSLSection = !isSwap && orderType !== 'TPSL';
+  const dragProps = isMobileSheet
+    ? {
+        drag: 'y' as const,
+        dragConstraints: { top: 0, bottom: 140 },
+        dragElastic: 0.2,
+        dragMomentum: false,
+        onDragEnd: (_: any, info: { offset: { y: number } }) => {
+          if (info.offset.y > 80 && onToggleSheet) onToggleSheet();
+        }
+      }
+    : {};
 
   const renderLimitPriceInput = () => (
     <div className="rounded-lg border border-white/10 bg-[#15191e] p-4 transition-colors hover:bg-[#1a1d26]">
@@ -345,7 +355,7 @@ export const TradingBoxPrimitive = ({
         <div className="fixed inset-0 bg-black/25 backdrop-blur-[2px] z-40 md:hidden" />
       )}
 
-      <div className={sheetWrapperClass} style={sheetWrapperStyle}>
+      <motion.div className={sheetWrapperClass} style={sheetWrapperStyle} {...dragProps}>
         <div
           className={`${
             isMobileSheet
@@ -406,24 +416,6 @@ export const TradingBoxPrimitive = ({
             style={{
               width: '100%',
               maxWidth: '100%'
-            }}
-            onTouchStart={e => {
-              if (!isMobileSheet) return;
-              setTouchStartY(e.touches[0].clientY);
-              setTouchDeltaY(0);
-            }}
-            onTouchMove={e => {
-              if (!isMobileSheet || touchStartY === null) return;
-              const delta = e.touches[0].clientY - touchStartY;
-              setTouchDeltaY(delta);
-            }}
-            onTouchEnd={() => {
-              if (!isMobileSheet) return;
-              if (touchDeltaY > 60 && onToggleSheet) {
-                onToggleSheet();
-              }
-              setTouchStartY(null);
-              setTouchDeltaY(0);
             }}
           >
           {/* Sub Header: Order Type + Icons */}
@@ -887,7 +879,7 @@ export const TradingBoxPrimitive = ({
           </>
         )}
         </div>
-      </div>
+      </motion.div>
 
       {/* Token Selector Modal - Desktop only */}
       {!isMobileSheet && (
