@@ -76,7 +76,7 @@ export const TradingBoxPrimitive = ({
   const networks = [
     {
       id: 'ethereum',
-      name: 'Ethereum (mainnet)',
+      name: 'Ethereum',
       icon: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png'
     },
     {
@@ -101,7 +101,7 @@ export const TradingBoxPrimitive = ({
     },
     {
       id: 'avalanche',
-      name: 'Avalanche (C-Chain)',
+      name: 'Avalanche',
       icon: 'https://assets.coingecko.com/coins/images/12559/large/coin-round-red.png'
     }
   ];

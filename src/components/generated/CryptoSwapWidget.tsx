@@ -77,7 +77,7 @@ export const CryptoSwapWidget = () => {
   const [buyToken, setBuyToken] = useState<TokenData>(() => POPULAR_TOKENS.find(t => t.symbol === "USDC") || POPULAR_TOKENS[0]);
   const [selectedNetwork, setSelectedNetwork] = useState<Network>({
     id: 'ethereum',
-    name: 'Ethereum (mainnet)',
+    name: 'Ethereum',
     icon: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png'
   });
   const handleSelectToken = (token: TokenData) => {
@@ -90,12 +90,12 @@ export const CryptoSwapWidget = () => {
   };
   const hasAmount = sellAmount && parseFloat(sellAmount) > 0;
   const networks: Network[] = [
-    { id: 'ethereum', name: 'Ethereum (mainnet)', icon: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png' },
+    { id: 'ethereum', name: 'Ethereum', icon: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png' },
     { id: 'arbitrum', name: 'Arbitrum', icon: 'https://assets.coingecko.com/coins/images/16547/large/photo_2023-03-29_21.47.00.jpeg' },
     { id: 'optimism', name: 'Optimism', icon: 'https://assets.coingecko.com/coins/images/25244/large/Optimism.png' },
     { id: 'base', name: 'Base', icon: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/base/info/logo.png' },
     { id: 'polygon', name: 'Polygon', icon: 'https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png' },
-    { id: 'avalanche', name: 'Avalanche (C-Chain)', icon: 'https://assets.coingecko.com/coins/images/12559/large/coin-round-red.png' },
+    { id: 'avalanche', name: 'Avalanche', icon: 'https://assets.coingecko.com/coins/images/12559/large/coin-round-red.png' },
   ];
   return <div className="relative min-h-screen w-full flex flex-col items-center justify-center p-4 pt-24 md:pt-16 gap-8 bg-[#1D1D1D] overflow-hidden text-white font-['Inter']">
       
