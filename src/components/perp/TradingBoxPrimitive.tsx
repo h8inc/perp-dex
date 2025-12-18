@@ -128,8 +128,8 @@ export const TradingBoxPrimitive = ({
   };
 
   const sheetWrapperClass = isMobileSheet
-    ? 'z-50 w-full bg-[#0b0e11] border-t border-white/10 font-sans antialiased shadow-2xl transition-transform duration-300 h-[80vh] max-h-[80vh] flex flex-col'
-    : 'flex w-full items-start justify-center bg-[#0b0e11] font-sans antialiased h-full';
+    ? 'relative z-50 w-full bg-[#0b0e11] border-t border-white/10 font-sans antialiased shadow-2xl transition-transform duration-300 h-[80vh] max-h-[80vh] flex flex-col'
+    : 'relative flex w-full items-start justify-center bg-[#0b0e11] font-sans antialiased h-full';
 
   const sheetWrapperStyle = isMobileSheet
     ? { 
