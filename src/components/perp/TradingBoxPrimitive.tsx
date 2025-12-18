@@ -63,6 +63,8 @@ export const TradingBoxPrimitive = ({
   const [isTPSLEnabled, setIsTPSLEnabled] = useState(false);
   const [takeProfitEntries, setTakeProfitEntries] = useState<Array<{ id: string; price: string; percentage: string }>>([]);
   const [stopLossEntries, setStopLossEntries] = useState<Array<{ id: string; price: string; percentage: string }>>([]);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const [touchDeltaY, setTouchDeltaY] = useState(0);
   
   // Network selection state
   const [selectedNetwork, setSelectedNetwork] = useState<{ id: string; name: string; icon?: string } | undefined>({
@@ -338,6 +340,11 @@ export const TradingBoxPrimitive = ({
 
   return (
     <>
+      {/* Mobile backdrop with blur when sheet is open */}
+      {isMobileSheet && isSheetOpen && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden" />
+      )}
+
       <div className={sheetWrapperClass} style={sheetWrapperStyle}>
         <div
           className={`${
@@ -399,6 +406,24 @@ export const TradingBoxPrimitive = ({
             style={{
               width: '100%',
               maxWidth: '100%'
+            }}
+            onTouchStart={e => {
+              if (!isMobileSheet) return;
+              setTouchStartY(e.touches[0].clientY);
+              setTouchDeltaY(0);
+            }}
+            onTouchMove={e => {
+              if (!isMobileSheet || touchStartY === null) return;
+              const delta = e.touches[0].clientY - touchStartY;
+              setTouchDeltaY(delta);
+            }}
+            onTouchEnd={() => {
+              if (!isMobileSheet) return;
+              if (touchDeltaY > 60 && onToggleSheet) {
+                onToggleSheet();
+              }
+              setTouchStartY(null);
+              setTouchDeltaY(0);
             }}
           >
           {/* Sub Header: Order Type + Icons */}
