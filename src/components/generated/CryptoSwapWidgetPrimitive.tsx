@@ -123,11 +123,11 @@ export const CryptoSwapWidgetPrimitive = ({
 
   return (
     <div className="relative flex flex-col w-[480px] max-w-full bg-[#131313] rounded-[24px] p-2 shadow-2xl font-sans text-white border border-white/5 overflow-hidden">
-      {/* SELL SECTION - Fixed Height 148px */}
+      {/* DEPOSIT SECTION - Fixed Height 148px */}
       <div className="flex flex-col justify-between px-4 py-4 relative bg-[#131313] hover:bg-white/[0.02] rounded-[20px] transition-colors group h-[148px]">
         {/* Header Row: Label + Percentage Buttons */}
         <div className="flex justify-between items-center h-6">
-          <span className="text-[#a0a0a0] font-medium text-sm">Sell</span>
+          <span className="text-[#a0a0a0] font-medium text-sm">Deposit</span>
           <div className={`flex gap-1 transition-opacity duration-200 ${sellAmount ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
             {[{
               label: '25%',
@@ -205,11 +205,11 @@ export const CryptoSwapWidgetPrimitive = ({
         </div>
       </div>
 
-      {/* BUY SECTION - Fixed Height 148px */}
+      {/* RECEIVE SECTION - Fixed Height 148px */}
       <div className="flex flex-col justify-between px-4 py-4 bg-[#1f1f1f] rounded-[20px] border border-transparent hover:border-white/5 transition-colors h-[148px]">
         {/* Header Row: Label + Suggested Tokens */}
         <div className="flex justify-between items-center h-6">
-          <span className="text-[#a0a0a0] font-medium text-sm">Buy</span>
+          <span className="text-[#a0a0a0] font-medium text-sm">Receive</span>
           
           {/* Suggested Tokens - Visible only when sell amount is entered */}
           {hasAmount && (
