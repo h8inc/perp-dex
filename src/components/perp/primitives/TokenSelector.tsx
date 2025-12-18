@@ -35,6 +35,7 @@ type TokenSelectorProps = {
   selectedNetwork?: Network; // Currently selected network
   onNetworkChange?: (network: Network) => void; // Network change handler
   onClearRecentSearches?: () => void; // Clear recent searches handler
+  showNetworks?: boolean; // Toggle network selector visibility
 };
 
 // Helper component to render a token row
@@ -124,7 +125,8 @@ export const TokenSelector = ({
   networks = [],
   selectedNetwork,
   onNetworkChange,
-  onClearRecentSearches
+  onClearRecentSearches,
+  showNetworks = true
 }: TokenSelectorProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isNetworkDropdownOpen, setIsNetworkDropdownOpen] = useState(false);
@@ -145,6 +147,9 @@ export const TokenSelector = ({
   }, [isNetworkDropdownOpen]);
 
   if (!isOpen) return null;
+
+  // Network visibility toggle
+  const networksList = showNetworks ? networks : [];
 
   // Use popularTokens if provided, otherwise use availableTokens for the grid
   const tokensForGrid = popularTokens || availableTokens;
@@ -196,9 +201,9 @@ export const TokenSelector = ({
           placeholder="Search tokens"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
-          className={`w-full bg-[#1f1f1f] text-white placeholder-[#5d6785] rounded-xl pl-10 ${networks.length > 0 ? 'pr-24' : 'pr-4'} py-3 outline-none border border-transparent focus:border-[#00ff9d]/50 transition-all text-base`}
+          className={`w-full bg-[#1f1f1f] text-white placeholder-[#5d6785] rounded-xl pl-10 ${networksList.length > 0 ? 'pr-24' : 'pr-4'} py-3 outline-none border border-transparent focus:border-[#00ff9d]/50 transition-all text-base`}
         />
-        {networks.length > 0 && (
+        {networksList.length > 0 && (
           <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20" ref={networkDropdownRef}>
             <button
               onClick={() => setIsNetworkDropdownOpen(!isNetworkDropdownOpen)}
@@ -216,7 +221,7 @@ export const TokenSelector = ({
             </button>
             {isNetworkDropdownOpen && (
               <div className="absolute right-0 top-full mt-2 w-48 bg-[#1f1f1f] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50">
-                {networks.map(network => (
+                {networksList.map(network => (
                   <button
                     key={network.id}
                     onClick={() => handleNetworkSelect(network)}

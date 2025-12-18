@@ -249,6 +249,7 @@ export const CryptoSwapWidget = () => {
         networks={networks}
         selectedNetwork={selectedNetwork}
         onNetworkChange={setSelectedNetwork}
+        showNetworks={false}
       />
 
       </div>
