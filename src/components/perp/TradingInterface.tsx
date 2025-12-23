@@ -231,7 +231,7 @@ const MarketTicker = ({
   return (
     <>
       {/* Mobile: Compact Ticker */}
-      <div className="md:hidden flex h-14 items-center justify-between gap-3 border-b border-white/10 bg-[#0b0e11] px-4 text-xs">
+      <div className="md:hidden flex h-14 items-center justify-between gap-3 border-b border-white/10 bg-[#0b0e11] px-4 sm:px-6 text-xs">
         <div className="flex items-center gap-2 min-w-0 flex-1">
           {getTokenIcon('BTC', 24)}
           <span className="text-sm font-medium text-white whitespace-nowrap">BTC</span>
@@ -250,53 +250,58 @@ const MarketTicker = ({
       </div>
 
       {/* Desktop: Full Ticker */}
-      <div className="hidden md:flex h-14 items-center gap-6 border-b border-white/10 bg-[#0b0e11] px-4 text-xs overflow-x-auto no-scrollbar">
-        <div className="flex items-center gap-2 pr-4 border-r border-white/10 min-w-fit">
-          <div className="flex items-center gap-1.5 cursor-pointer hover:bg-white/5 p-1 rounded">
-            {getTokenIcon('BTC', 20)}
-            <span className="text-base font-bold text-white">BTC / USD</span>
-            <ChevronDown size={14} />
+      <div className="hidden md:flex h-14 items-center border-b border-white/10 bg-[#0b0e11] px-4 sm:px-6 text-xs">
+        {/* Scrollable stats strip */}
+        <div className="flex items-center gap-6 min-w-0 flex-1 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-2 pr-4 border-r border-white/10 min-w-fit">
+            <div className="flex items-center gap-1.5 cursor-pointer hover:bg-white/5 p-1 rounded">
+              {getTokenIcon('BTC', 20)}
+              <span className="text-base font-bold text-white">BTC / USD</span>
+              <ChevronDown size={14} />
+            </div>
+          </div>
+          
+          <div className="flex flex-col min-w-fit">
+            <span className="text-lg font-bold text-white">90,528 USD</span>
+            <span className="text-[#00ff9d] text-[10px]">$90,528</span>
+          </div>
+
+          <div className="flex flex-col gap-0.5 min-w-fit">
+            <span className="text-gray-500 text-[10px]">MARK PRICE</span>
+            <span className="text-white">90,523 USD</span>
+          </div>
+
+          <div className="flex flex-col gap-0.5 min-w-fit">
+            <span className="text-gray-500 text-[10px]">INDEX PRICE</span>
+            <span className="text-white">90,569 USD</span>
+          </div>
+
+          <div className="flex flex-col gap-0.5 min-w-fit">
+            <span className="text-gray-500 text-[10px]">FUNDING RATE</span>
+            <div className="flex gap-1">
+              <span className="text-[#00ff9d]">0.0003%</span>
+              <span className="text-gray-400">47:32</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-0.5 min-w-fit">
+            <span className="text-gray-500 text-[10px]">24H CHANGE</span>
+            <span className="text-[#ff4d4d]">-1,847 USD -2.00%</span>
+          </div>
+
+          <div className="flex flex-col gap-0.5 min-w-fit">
+            <span className="text-gray-500 text-[10px]">OPEN INTEREST</span>
+            <span className="text-white">29,808,455 USD</span>
+          </div>
+
+          <div className="flex flex-col gap-0.5 min-w-fit">
+            <span className="text-gray-500 text-[10px]">24H VOLUME</span>
+            <span className="text-white">452,119,618 USD</span>
           </div>
         </div>
-        
-        <div className="flex flex-col">
-          <span className="text-lg font-bold text-white">90,528 USD</span>
-          <span className="text-[#00ff9d] text-[10px]">$90,528</span>
-        </div>
 
-        <div className="flex flex-col gap-0.5">
-          <span className="text-gray-500 text-[10px]">MARK PRICE</span>
-          <span className="text-white">90,523 USD</span>
-        </div>
-
-        <div className="flex flex-col gap-0.5">
-          <span className="text-gray-500 text-[10px]">INDEX PRICE</span>
-          <span className="text-white">90,569 USD</span>
-        </div>
-
-        <div className="flex flex-col gap-0.5">
-          <span className="text-gray-500 text-[10px]">FUNDING RATE</span>
-          <div className="flex gap-1">
-            <span className="text-[#00ff9d]">0.0003%</span>
-            <span className="text-gray-400">47:32</span>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-0.5">
-          <span className="text-gray-500 text-[10px]">24H CHANGE</span>
-          <span className="text-[#ff4d4d]">-1,847 USD -2.00%</span>
-        </div>
-
-        <div className="flex flex-col gap-0.5">
-          <span className="text-gray-500 text-[10px]">OPEN INTEREST</span>
-          <span className="text-white">29,808,455 USD</span>
-        </div>
-
-        <div className="flex flex-col gap-0.5">
-          <span className="text-gray-500 text-[10px]">24H VOLUME</span>
-          <span className="text-white">452,119,618 USD</span>
-        </div>
-        {rightActions && <div className="ml-auto flex items-center gap-2 shrink-0">
+        {/* Fixed right slot for actions (prevents button shifting) */}
+        {rightActions && <div className="ml-4 flex items-center gap-2 shrink-0">
             {rightActions}
           </div>}
       </div>

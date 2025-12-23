@@ -633,7 +633,7 @@ export const TradingDashboard = ({
         </header>}
 
       {/* Page-level navigation (always visible, even when embedded) */}
-      <div className="flex items-center justify-between px-6 py-2 border-b border-white/5 bg-[#0a0a0a] gap-4">
+      <div className="flex items-center justify-between h-14 px-4 sm:px-6 border-b border-white/5 bg-[#0a0a0a] gap-4">
         <div className="flex items-center gap-4 min-w-0">
           <div className="relative">
             <button onClick={() => setShowAccountDropdown(!showAccountDropdown)} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-md text-xs font-medium text-white transition-colors">
