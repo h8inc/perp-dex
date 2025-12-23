@@ -3,6 +3,7 @@ import { ChevronDown, Settings, Maximize2, Share2, Camera, Layout, Search, Bell,
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { TradingBoxPrimitive } from './TradingBoxPrimitive';
+import { TradingDashboard } from '../generated/TradingDashboard';
 import { getTokenIcon } from './TokenIcons';
 
 // --- Types & Mock Data ---
@@ -212,11 +213,15 @@ const CandlestickChart = ({ data }: { data: Array<{ time: number; price: number;
 const Header = ({
   isWalletConnected,
   onConnect,
-  onDisconnect
+  onDisconnect,
+  activeNav = 'Trade',
+  onNavigate
 }: {
   isWalletConnected: boolean;
   onConnect: () => void;
   onDisconnect: () => void;
+  activeNav?: string;
+  onNavigate?: (link: string) => void;
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -258,7 +263,15 @@ const Header = ({
         {/* Desktop: Navigation Links on Left */}
         <nav className="hidden md:flex items-center gap-8">
           {navigationLinks.map(link => (
-            <a key={link} href="#" className={`text-sm font-medium transition-colors ${link === 'Trade' ? 'text-white hover:text-[#00ff9d]' : 'text-[#A0A0A0] hover:text-white'}`}>
+            <a
+              key={link}
+              href="#"
+              onClick={e => {
+                e.preventDefault();
+                onNavigate?.(link);
+              }}
+              className={`text-sm font-medium transition-colors ${link === activeNav ? 'text-white hover:text-[#00ff9d]' : 'text-[#A0A0A0] hover:text-white'}`}
+            >
               {link}
             </a>
           ))}
@@ -338,7 +351,11 @@ const Header = ({
                   key={link}
                   href="#"
                   className="px-6 py-4 text-sm font-medium text-[#A0A0A0] hover:text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-b-0"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={e => {
+                    e.preventDefault();
+                    setIsMenuOpen(false);
+                    onNavigate?.(link);
+                  }}
                 >
                   {link}
                 </a>
@@ -669,42 +686,75 @@ const BottomPanel = ({
 export const TradingInterface = () => {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
+  const [activeView, setActiveView] = useState<'trade' | 'portfolio'>('trade');
+
+  useEffect(() => {
+    const applyFromHash = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash === 'portfolio') setActiveView('portfolio');
+      else setActiveView('trade');
+    };
+    applyFromHash();
+    window.addEventListener('hashchange', applyFromHash);
+    return () => window.removeEventListener('hashchange', applyFromHash);
+  }, []);
+
+  const handleNavigate = (link: string) => {
+    if (link === 'Portfolio') {
+      window.location.hash = 'portfolio';
+      return;
+    }
+    if (link === 'Trade') {
+      window.location.hash = 'trade';
+      return;
+    }
+    // Other nav items are placeholders for now.
+  };
 
   // @return
   return <div className="flex flex-col h-screen w-full bg-[#0b0e11] text-white overflow-hidden font-sans selection:bg-[#00ff9d]/30">
-      <Header isWalletConnected={isWalletConnected} onConnect={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
-      <div className="pt-[72px]">
-        <MarketTicker />
-      
-      <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
-        {/* Left Column: Chart & Bottom Panel */}
-        <div className="flex flex-1 flex-col min-w-0">
-          <ChartSection />
-          <BottomPanel isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} />
-        </div>
+      <Header
+        isWalletConnected={isWalletConnected}
+        onConnect={() => setIsWalletConnected(true)}
+        onDisconnect={() => setIsWalletConnected(false)}
+        activeNav={activeView === 'portfolio' ? 'Portfolio' : 'Trade'}
+        onNavigate={handleNavigate}
+      />
 
-        {/* Middle Column: Order Book */}
-        <div className="hidden lg:block border-l border-white/10 w-[280px] shrink-0">
-          <OrderBook />
-        </div>
+      {activeView === 'portfolio' ? <div className="pt-[72px] h-full overflow-y-auto">
+          <TradingDashboard embedded />
+        </div> : <div className="pt-[72px]">
+          <MarketTicker />
+        
+          <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
+            {/* Left Column: Chart & Bottom Panel */}
+            <div className="flex flex-1 flex-col min-w-0">
+              <ChartSection />
+              <BottomPanel isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} />
+            </div>
 
-        {/* Right Column: Order Entry */}
-        <div className="hidden lg:block border-l border-white/10 bg-[#0b0e11] overflow-y-auto lg:flex-[0.32] lg:min-w-[360px] lg:max-w-[520px]">
-          <TradingBoxPrimitive isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
-        </div>
-      </div>
+            {/* Middle Column: Order Book */}
+            <div className="hidden lg:block border-l border-white/10 w-[280px] shrink-0">
+              <OrderBook />
+            </div>
 
-      {/* Mobile bottom sheet for TradingBox */}
-      <div className="fixed inset-x-0 bottom-0 z-50 lg:hidden">
-        <TradingBoxPrimitive
-          isMobileSheet
-          isSheetOpen={isMobileSheetOpen}
-          onToggleSheet={() => setIsMobileSheetOpen(o => !o)}
-          isWalletConnected={isWalletConnected}
-          onConnectWallet={() => setIsWalletConnected(true)}
-          onDisconnect={() => setIsWalletConnected(false)}
-        />
-      </div>
-      </div>
+            {/* Right Column: Order Entry */}
+            <div className="hidden lg:block border-l border-white/10 bg-[#0b0e11] overflow-y-auto lg:flex-[0.32] lg:min-w-[360px] lg:max-w-[520px]">
+              <TradingBoxPrimitive isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
+            </div>
+          </div>
+
+          {/* Mobile bottom sheet for TradingBox */}
+          <div className="fixed inset-x-0 bottom-0 z-50 lg:hidden">
+            <TradingBoxPrimitive
+              isMobileSheet
+              isSheetOpen={isMobileSheetOpen}
+              onToggleSheet={() => setIsMobileSheetOpen(o => !o)}
+              isWalletConnected={isWalletConnected}
+              onConnectWallet={() => setIsWalletConnected(true)}
+              onDisconnect={() => setIsWalletConnected(false)}
+            />
+          </div>
+        </div>}
     </div>;
 };
