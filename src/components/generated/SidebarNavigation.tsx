@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { BarChart2, CandlestickChart, ChevronLeft, TrendingUp, Wallet, Vault, DollarSign, Trophy, Code } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -56,10 +56,27 @@ const Divider = ({
 }) => <div className={cn("px-4 py-1", className)}>
     <div className="h-[1px] w-full bg-[#686b8233]" />
   </div>;
-export const SidebarNavigation = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [activeItem, setActiveItem] = useState('Portfolio');
-  const navigationItems = [{
+type SidebarNavigationItemId = 'trade' | 'markets' | 'portfolio' | 'vault' | 'funding' | 'points' | 'leaderboard' | 'api';
+type SidebarNavigationProps = {
+  activeItemId?: SidebarNavigationItemId; // controlled
+  onNavigate?: (id: SidebarNavigationItemId) => void;
+  defaultCollapsed?: boolean;
+  footerActions?: React.ReactNode | ((isCollapsed: boolean) => React.ReactNode);
+  className?: string;
+};
+export const SidebarNavigation = ({
+  activeItemId,
+  onNavigate,
+  defaultCollapsed = false,
+  footerActions,
+  className
+}: SidebarNavigationProps) => {
+  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
+  const [internalActiveId, setInternalActiveId] = useState<SidebarNavigationItemId>('portfolio');
+  const resolvedActiveId = activeItemId ?? internalActiveId;
+  const resolvedFooterActions = typeof footerActions === 'function' ? footerActions(isCollapsed) : footerActions;
+
+  const navigationItems = useMemo(() => [{
     id: 'trade',
     label: 'Trade',
     icon: CandlestickChart
@@ -92,13 +109,23 @@ export const SidebarNavigation = () => {
     id: 'api',
     label: 'API',
     icon: Code
-  }] as any[];
+  }] as {
+    id: SidebarNavigationItemId;
+    label: string;
+    icon: React.ElementType;
+    badge?: string;
+  }[], []);
+
+  const handleClick = (itemId: SidebarNavigationItemId) => {
+    setInternalActiveId(itemId);
+    onNavigate?.(itemId);
+  };
   return <motion.div initial={false} animate={{
     width: isCollapsed ? '64px' : '192px'
   }} transition={{
     duration: 0.3,
     ease: [0.4, 0, 0.2, 1]
-  }} className="flex flex-col h-screen bg-[#0a0a0a] border-r border-[#686b8233] py-2 select-none overflow-hidden">
+  }} className={cn("flex flex-col h-full bg-[#0a0a0a] border-r border-[#686b8233] py-2 select-none overflow-hidden", className)}>
       {/* Logo Area */}
       <div className="px-5 pt-1 pb-4 h-10 flex items-center justify-start">
         <AnimatePresence initial={false}>
@@ -140,11 +167,14 @@ export const SidebarNavigation = () => {
 
       {/* Main Navigation */}
       <div className="flex-grow flex flex-col gap-1 overflow-y-auto overflow-x-hidden scrollbar-none py-2">
-        {navigationItems.map(item => <NavItem key={item.id} icon={item.icon} label={item.label} isActive={activeItem === item.label} isCollapsed={isCollapsed} onClick={() => setActiveItem(item.label)} badge={item.badge} />)}
+        {navigationItems.map(item => <NavItem key={item.id} icon={item.icon} label={item.label} isActive={resolvedActiveId === item.id} isCollapsed={isCollapsed} onClick={() => handleClick(item.id)} badge={item.badge} />)}
       </div>
 
       {/* Footer / Collapse Button */}
       <div className="mt-auto border-t border-[#686b8233] pt-2">
+        {resolvedFooterActions && <div className={cn("px-2 pb-2", isCollapsed ? "flex flex-col items-center gap-1" : "flex flex-col gap-1")}>
+            {resolvedFooterActions}
+          </div>}
         <NavItem icon={ChevronLeft} label="Collapse" isCollapsed={isCollapsed} onClick={() => setIsCollapsed(!isCollapsed)} className="text-[#9497a9]" />
       </div>
     </motion.div>;

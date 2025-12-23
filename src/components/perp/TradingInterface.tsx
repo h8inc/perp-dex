@@ -5,6 +5,7 @@ import { cn } from '../../lib/utils';
 import { TradingBoxPrimitive } from './TradingBoxPrimitive';
 import { TradingDashboard } from '../generated/TradingDashboard';
 import { getTokenIcon } from './TokenIcons';
+import { SidebarNavigation } from '../generated/SidebarNavigation';
 
 // --- Types & Mock Data ---
 
@@ -210,164 +211,23 @@ const CandlestickChart = ({ data }: { data: Array<{ time: number; price: number;
   );
 };
 
-const Header = ({
-  isWalletConnected,
-  onConnect,
-  onDisconnect,
-  activeNav = 'Trade',
-  onNavigate
+const MobileTopBar = ({
+  onOpenNav
 }: {
-  isWalletConnected: boolean;
-  onConnect: () => void;
-  onDisconnect: () => void;
-  activeNav?: string;
-  onNavigate?: (link: string) => void;
+  onOpenNav: () => void;
 }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const navigationLinks = ['Trade', 'Portfolio', 'Vault', 'Funding', 'Refer', 'Points', 'Leaderboard', 'More'];
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
-
-  return (
-    <>
-      <motion.header
-        initial={{ y: 0 }}
-        animate={{ y: isVisible ? 0 : -72 }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="fixed top-0 left-0 right-0 z-50 flex h-[72px] items-center justify-between border-b border-white/10 backdrop-blur-md bg-[#0b0e11]/80 px-4 sm:px-6 md:px-8 text-sm font-medium text-gray-400"
-      >
-        {/* Mobile: Logo on Left */}
-        <div className="md:hidden flex items-center select-none">
-          <img 
-            src="/logo.svg" 
-            alt="Extended" 
-            className="h-5 w-auto"
-          />
-        </div>
-
-        {/* Desktop: Navigation Links on Left */}
-        <nav className="hidden md:flex items-center gap-8">
-          {navigationLinks.map(link => (
-            <a
-              key={link}
-              href="#"
-              onClick={e => {
-                e.preventDefault();
-                onNavigate?.(link);
-              }}
-              className={`text-sm font-medium transition-colors ${link === activeNav ? 'text-white hover:text-[#00ff9d]' : 'text-[#A0A0A0] hover:text-white'}`}
-            >
-              {link}
-            </a>
-          ))}
-        </nav>
-
-        {/* Desktop: Logo in Center */}
-        <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center select-none">
-          <img 
-            src="/logo.svg" 
-            alt="Extended" 
-            className="h-6 w-auto"
-          />
-        </div>
-
-        {/* Right: Mobile - Hamburger Menu + Buttons */}
-        <div className="md:hidden flex items-center gap-2">
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-2 text-white hover:text-[#15F46F] transition-colors bg-white/5 hover:bg-white/10 rounded-lg"
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <MoreHorizontal className="w-5 h-5" />
-            )}
-          </button>
-          <button className="p-2 hover:bg-white/5 rounded-full"><Bell size={16} /></button>
-          {!isWalletConnected ? (
-            <button onClick={onConnect} className="flex items-center gap-2 bg-[#15F46F] hover:bg-[#12d160] text-[#06171E] px-4 py-2 rounded-lg text-xs font-medium transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
-              <Wallet size={14} />
-              Connect
-            </button>
-          ) : (
-            <button onClick={onDisconnect} className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-white border border-white/10 hover:border-white/30 hover:bg-white/5 transition-colors cursor-pointer shrink-0">
-              Guest
-            </button>
-          )}
-        </div>
-
-        {/* Right: Desktop - Buttons */}
-        <div className="hidden md:flex items-center gap-3">
-          <div className="hidden md:flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" style={{
-            display: "none"
-          }}></span>
-            <span className="text-xs text-green-500" style={{
-            display: "none"
-          }}>Connected</span>
-          </div>
-          <button className="p-2 hover:bg-white/5 rounded-full"><Bell size={16} /></button>
-          <button className="p-2 hover:bg-white/5 rounded-full"><Settings size={16} /></button>
-          {!isWalletConnected ? (
-            <button onClick={onConnect} className="flex items-center gap-2 bg-[#15F46F] hover:bg-[#12d160] text-[#06171E] px-6 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
-              <Wallet size={14} />
-              Connect Wallet
-            </button>
-          ) : (
-            <button onClick={onDisconnect} className="flex items-center gap-2 px-3 h-9 rounded-lg text-sm font-medium text-white border border-white/10 hover:border-white/30 hover:bg-white/5 transition-colors cursor-pointer shrink-0">
-              Switch to guest
-            </button>
-          )}
-        </div>
-      </motion.header>
-
-      {/* Mobile Menu Overlay */}
-      {isMenuOpen && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            onClick={() => setIsMenuOpen(false)}
-          />
-          <div className="fixed top-[72px] left-0 right-0 z-50 bg-[#0b0e11] border-b border-white/10 md:hidden">
-            <div className="flex flex-col">
-              {navigationLinks.map(link => (
-                <a
-                  key={link}
-                  href="#"
-                  className="px-6 py-4 text-sm font-medium text-[#A0A0A0] hover:text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-b-0"
-                  onClick={e => {
-                    e.preventDefault();
-                    setIsMenuOpen(false);
-                    onNavigate?.(link);
-                  }}
-                >
-                  {link}
-                </a>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-    </>
-  );
+  return <div className="md:hidden flex items-center justify-between h-14 px-4 border-b border-white/10 bg-[#0b0e11]">
+      <img src="/logo.svg" alt="Extended" className="h-5 w-auto select-none" />
+      <button onClick={onOpenNav} className="p-2 text-white hover:text-[#15F46F] transition-colors bg-white/5 hover:bg-white/10 rounded-lg" aria-label="Open navigation">
+        <Menu className="w-5 h-5" />
+      </button>
+    </div>;
 };
-const MarketTicker = () => {
+const MarketTicker = ({
+  rightActions
+}: {
+  rightActions?: React.ReactNode;
+}) => {
   return (
     <>
       {/* Mobile: Compact Ticker */}
@@ -381,9 +241,12 @@ const MarketTicker = () => {
           <span className="text-sm font-medium text-white ml-1">$86,210</span>
           <span className="text-[#00ff9d] text-xs ml-1">/ 0.36%</span>
         </div>
-        <button className="p-1.5 hover:bg-white/5 rounded-full shrink-0">
-          <MoreHorizontal size={16} className="text-gray-400" />
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          {rightActions}
+          <button className="p-1.5 hover:bg-white/5 rounded-full shrink-0">
+            <MoreHorizontal size={16} className="text-gray-400" />
+          </button>
+        </div>
       </div>
 
       {/* Desktop: Full Ticker */}
@@ -433,6 +296,9 @@ const MarketTicker = () => {
           <span className="text-gray-500 text-[10px]">24H VOLUME</span>
           <span className="text-white">452,119,618 USD</span>
         </div>
+        {rightActions && <div className="ml-auto flex items-center gap-2 shrink-0">
+            {rightActions}
+          </div>}
       </div>
     </>
   );
@@ -687,6 +553,7 @@ export const TradingInterface = () => {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
   const [activeView, setActiveView] = useState<'trade' | 'portfolio'>('trade');
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   useEffect(() => {
     const applyFromHash = () => {
@@ -699,62 +566,104 @@ export const TradingInterface = () => {
     return () => window.removeEventListener('hashchange', applyFromHash);
   }, []);
 
-  const handleNavigate = (link: string) => {
-    if (link === 'Portfolio') {
-      window.location.hash = 'portfolio';
-      return;
-    }
-    if (link === 'Trade') {
-      window.location.hash = 'trade';
-      return;
-    }
-    // Other nav items are placeholders for now.
+  const navigateTo = (id: 'trade' | 'portfolio') => {
+    window.location.hash = id;
   };
+
+  const walletAction = !isWalletConnected ? <button onClick={() => setIsWalletConnected(true)} className="flex items-center gap-2 bg-[#15F46F] hover:bg-[#12d160] text-[#06171E] px-4 py-2 rounded-lg text-xs font-medium transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
+        <Wallet size={14} />
+        Connect Wallet
+      </button> : <button onClick={() => setIsWalletConnected(false)} className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-white border border-white/10 hover:border-white/30 hover:bg-white/5 transition-colors cursor-pointer shrink-0 whitespace-nowrap">
+        Switch to guest
+      </button>;
 
   // @return
   return <div className="flex flex-col h-screen w-full bg-[#0b0e11] text-white overflow-hidden font-sans selection:bg-[#00ff9d]/30">
-      <Header
-        isWalletConnected={isWalletConnected}
-        onConnect={() => setIsWalletConnected(true)}
-        onDisconnect={() => setIsWalletConnected(false)}
-        activeNav={activeView === 'portfolio' ? 'Portfolio' : 'Trade'}
-        onNavigate={handleNavigate}
-      />
+      <MobileTopBar onOpenNav={() => setIsMobileNavOpen(true)} />
 
-      {activeView === 'portfolio' ? <div className="pt-[72px] h-full overflow-y-auto">
-          <TradingDashboard embedded />
-        </div> : <div className="pt-[72px]">
-          <MarketTicker />
-        
-          <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
-            {/* Left Column: Chart & Bottom Panel */}
-            <div className="flex flex-1 flex-col min-w-0">
-              <ChartSection />
-              <BottomPanel isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} />
-            </div>
-
-            {/* Middle Column: Order Book */}
-            <div className="hidden lg:block border-l border-white/10 w-[280px] shrink-0">
-              <OrderBook />
-            </div>
-
-            {/* Right Column: Order Entry */}
-            <div className="hidden lg:block border-l border-white/10 bg-[#0b0e11] overflow-y-auto lg:flex-[0.32] lg:min-w-[360px] lg:max-w-[520px]">
-              <TradingBoxPrimitive isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
-            </div>
-          </div>
-
-          {/* Mobile bottom sheet for TradingBox */}
-          <div className="fixed inset-x-0 bottom-0 z-50 lg:hidden">
-            <TradingBoxPrimitive
-              isMobileSheet
-              isSheetOpen={isMobileSheetOpen}
-              onToggleSheet={() => setIsMobileSheetOpen(o => !o)}
-              isWalletConnected={isWalletConnected}
-              onConnectWallet={() => setIsWalletConnected(true)}
-              onDisconnect={() => setIsWalletConnected(false)}
+      {/* Mobile nav drawer */}
+      {isMobileNavOpen && <div className="md:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setIsMobileNavOpen(false)} />
+          <div className="absolute top-0 left-0 h-full w-[240px]">
+            <SidebarNavigation
+              className="h-full"
+              activeItemId={activeView === 'portfolio' ? 'portfolio' : 'trade'}
+              onNavigate={id => {
+                if (id === 'portfolio') navigateTo('portfolio');
+                if (id === 'trade') navigateTo('trade');
+                setIsMobileNavOpen(false);
+              }}
+              footerActions={isCollapsed => <>
+                  <button className={cn("h-10 rounded-xl text-[#9497a9] hover:bg-[#ffffff0a] hover:text-white transition-all duration-200 flex items-center", isCollapsed ? "w-10 justify-center px-0" : "w-full px-3 gap-3")}>
+                    <Bell size={18} />
+                    {!isCollapsed && <span className="text-sm font-medium">Notifications</span>}
+                  </button>
+                  <button className={cn("h-10 rounded-xl text-[#9497a9] hover:bg-[#ffffff0a] hover:text-white transition-all duration-200 flex items-center", isCollapsed ? "w-10 justify-center px-0" : "w-full px-3 gap-3")}>
+                    <Settings size={18} />
+                    {!isCollapsed && <span className="text-sm font-medium">Settings</span>}
+                  </button>
+                </>}
             />
           </div>
         </div>}
+
+      <div className="flex flex-1 min-h-0">
+        {/* Desktop sidebar navigation */}
+        <SidebarNavigation
+          className="hidden md:flex shrink-0"
+          activeItemId={activeView === 'portfolio' ? 'portfolio' : 'trade'}
+          onNavigate={id => {
+            if (id === 'portfolio') navigateTo('portfolio');
+            if (id === 'trade') navigateTo('trade');
+          }}
+          footerActions={isCollapsed => <>
+              <button className={cn("h-10 rounded-xl text-[#9497a9] hover:bg-[#ffffff0a] hover:text-white transition-all duration-200 flex items-center", isCollapsed ? "w-10 justify-center px-0" : "w-full px-3 gap-3")}>
+                <Bell size={18} />
+                {!isCollapsed && <span className="text-sm font-medium">Notifications</span>}
+              </button>
+              <button className={cn("h-10 rounded-xl text-[#9497a9] hover:bg-[#ffffff0a] hover:text-white transition-all duration-200 flex items-center", isCollapsed ? "w-10 justify-center px-0" : "w-full px-3 gap-3")}>
+                <Settings size={18} />
+                {!isCollapsed && <span className="text-sm font-medium">Settings</span>}
+              </button>
+            </>}
+        />
+
+        {/* Main content */}
+        <div className="flex-1 min-w-0 overflow-y-auto">
+          {activeView === 'portfolio' ? <TradingDashboard embedded headerActions={walletAction} /> : <>
+              <MarketTicker rightActions={walletAction} />
+            
+              <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
+                {/* Left Column: Chart & Bottom Panel */}
+                <div className="flex flex-1 flex-col min-w-0">
+                  <ChartSection />
+                  <BottomPanel isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} />
+                </div>
+
+                {/* Middle Column: Order Book */}
+                <div className="hidden lg:block border-l border-white/10 w-[280px] shrink-0">
+                  <OrderBook />
+                </div>
+
+                {/* Right Column: Order Entry */}
+                <div className="hidden lg:block border-l border-white/10 bg-[#0b0e11] overflow-y-auto lg:flex-[0.32] lg:min-w-[360px] lg:max-w-[520px]">
+                  <TradingBoxPrimitive isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
+                </div>
+              </div>
+
+              {/* Mobile bottom sheet for TradingBox */}
+              <div className="fixed inset-x-0 bottom-0 z-50 lg:hidden">
+                <TradingBoxPrimitive
+                  isMobileSheet
+                  isSheetOpen={isMobileSheetOpen}
+                  onToggleSheet={() => setIsMobileSheetOpen(o => !o)}
+                  isWalletConnected={isWalletConnected}
+                  onConnectWallet={() => setIsWalletConnected(true)}
+                  onDisconnect={() => setIsWalletConnected(false)}
+                />
+              </div>
+            </>}
+        </div>
+      </div>
     </div>;
 };

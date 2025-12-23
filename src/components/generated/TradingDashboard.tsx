@@ -7,6 +7,7 @@ import { MetricConfigModal, MetricConfig, SectionConfig } from './MetricConfigMo
 // --- Types ---
 
 type ChartType = 'area' | 'candlestick';
+type PortfolioPageTab = 'overview' | 'positions' | 'open-orders' | 'funding' | 'realized-pnl';
 interface AccountData {
   id: string;
   name: string;
@@ -333,15 +334,18 @@ const CandlestickChart = ({
 
 // @component: TradingDashboard
 export const TradingDashboard = ({
-  embedded = false
+  embedded = false,
+  headerActions
 }: {
   embedded?: boolean;
+  headerActions?: React.ReactNode;
 }) => {
   const [activeTableTab, setActiveTableTab] = useState<'health' | 'performance'>('health');
   const [timeRange, setTimeRange] = useState('1W');
   const [chartType, setChartType] = useState<ChartType>('area');
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>(MOCK_ACCOUNTS.map(acc => acc.id));
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+  const [pageTab, setPageTab] = useState<PortfolioPageTab>('overview');
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -608,317 +612,338 @@ export const TradingDashboard = ({
 
   // @return
   return <div className="flex flex-col w-full h-full min-h-screen bg-[#0a0a0a] text-zinc-300 font-sans overflow-x-hidden">
-      {!embedded && <>
-          {/* Navigation / Header */}
-          <header className="flex items-center justify-between px-6 h-14 border-b border-white/5 bg-[#0a0a0a]">
-            <div className="flex items-center gap-8">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-white text-lg tracking-tight">Portfolio Dashboard</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="p-1.5 hover:bg-white/5 rounded-md cursor-pointer">
-                <TrendingUp size={18} />
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10">
-                <div className="w-5 h-5 bg-orange-500/20 rounded flex items-center justify-center">
-                  <Activity size={12} className="text-orange-500" />
-                </div>
-                <span className="text-xs font-mono text-zinc-400">0x1A2B...5678</span>
-              </div>
-            </div>
-          </header>
-
-          {/* Sub-Header Tabs */}
-          <div className="flex items-center justify-between px-6 py-2 border-b border-white/5 bg-[#0a0a0a]">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <button onClick={() => setShowAccountDropdown(!showAccountDropdown)} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-md text-xs font-medium text-white transition-colors">
-                  Accounts · {selectedAccounts.length} <ChevronDown size={14} className={cn("transition-transform", showAccountDropdown && "rotate-180")} />
-                </button>
-                
-                {/* Account Multi-Select Dropdown */}
-                {showAccountDropdown && <div className="absolute top-full left-0 mt-2 w-72 bg-zinc-900 border border-white/10 rounded-lg shadow-xl z-50">
-                    {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-                      <span className="text-xs font-bold text-white uppercase tracking-wide">Filter Accounts</span>
-                      <button onClick={() => setShowAccountDropdown(false)} className="text-zinc-500 hover:text-white transition-colors">
-                        <X size={14} />
-                      </button>
-                    </div>
-                    
-                    {/* Actions */}
-                    <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10">
-                      <button onClick={selectAllAccounts} className="text-[10px] font-medium text-emerald-400 hover:text-emerald-300 transition-colors uppercase tracking-wide">
-                        Select All
-                      </button>
-                      <span className="text-zinc-600">·</span>
-                      <button onClick={clearAllAccounts} className="text-[10px] font-medium text-zinc-400 hover:text-zinc-300 transition-colors uppercase tracking-wide">
-                        Clear All
-                      </button>
-                    </div>
-                    
-                    {/* Account List */}
-                    <div className="max-h-64 overflow-y-auto">
-                      {MOCK_ACCOUNTS.map(account => {
-                    const isSelected = selectedAccounts.includes(account.id);
-                    const isLastSelected = selectedAccounts.length === 1 && isSelected;
-                    return <button key={account.id} onClick={() => !isLastSelected && toggleAccount(account.id)} disabled={isLastSelected} className={cn("w-full flex items-center justify-between px-4 py-3 text-left transition-colors border-b border-white/5 last:border-b-0", isSelected ? "bg-emerald-500/10 hover:bg-emerald-500/15" : "hover:bg-white/5", isLastSelected && "opacity-50 cursor-not-allowed")}>
-                            <div className="flex-1">
-                              <div className="text-xs font-medium text-white mb-0.5">{account.name}</div>
-                              <div className="flex items-center gap-3 text-[10px] text-zinc-500">
-                                <span>Equity: {formatCurrency(account.equity)}</span>
-                                <span className={cn("font-medium", account.unrealisedPnl >= 0 ? "text-emerald-400" : "text-rose-400")}>
-                                  {account.unrealisedPnl >= 0 ? '+' : ''}{formatCurrency(account.unrealisedPnl)}
-                                </span>
-                              </div>
-                            </div>
-                            
-                            <div className={cn("w-4 h-4 rounded border flex items-center justify-center transition-all", isSelected ? "bg-emerald-500 border-emerald-500" : "border-zinc-600")}>
-                              {isSelected && <Check size={12} className="text-white" />}
-                            </div>
-                          </button>;
-                  })}
-                    </div>
-                    
-                    {/* Footer */}
-                    <div className="px-4 py-3 border-t border-white/10 bg-zinc-900/50">
-                      <div className="text-[10px] text-zinc-500">
-                        {selectedAccounts.length} of {MOCK_ACCOUNTS.length} accounts selected
-                      </div>
-                    </div>
-                  </div>}
-              </div>
-              <div className="flex bg-zinc-900/80 rounded-md p-1 gap-0.5">
-                {['1D', '1W', '1M', '1Y', 'All'].map(range => <button key={range} onClick={() => setTimeRange(range)} className={cn("px-3 py-1 text-[11px] font-medium rounded transition-all", timeRange === range ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300")}>
-                    {range}
-                  </button>)}
-              </div>
-              <div className="h-4 w-[1px] bg-white/10 mx-2" />
-              <div className="flex items-center gap-6 text-xs font-medium uppercase tracking-wider">
-                <button className="text-white border-b-2 border-emerald-500 pb-2 -mb-2">Overview</button>
-                <button className="text-zinc-500 hover:text-white transition-colors">Positions</button>
-                <button className="text-zinc-500 hover:text-white transition-colors">Open Orders</button>
-                <button className="text-zinc-500 hover:text-white transition-colors">Funding</button>
-                <button className="text-zinc-500 hover:text-white transition-colors">Realized P&L</button>
-              </div>
+      {!embedded && <header className="flex items-center justify-between px-6 h-14 border-b border-white/5 bg-[#0a0a0a]">
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white text-lg tracking-tight">Portfolio Dashboard</span>
             </div>
           </div>
-        </>}
 
-      {/* Metrics Section */}
-      <div className="px-6 py-4 border-b border-white/5 bg-[#0d0d0d]">
-        <div className="flex flex-col gap-4">
-          {/* Header with Edit Button */}
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-medium text-white">Key Metrics</h2>
-            <button onClick={handleEditSection} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white rounded-md text-xs font-medium transition-colors">
-              <Settings size={14} />
-              Configure Metrics
-            </button>
-          </div>
-
-          {/* Metrics Grid */}
-          {sectionConfig.selectedMetrics.length === 0 ? <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-white/10 rounded-lg">
-              <div className="text-zinc-500 text-sm text-center mb-4">
-                No metrics configured
-              </div>
-              <button onClick={handleEditSection} className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 rounded-lg text-sm font-medium transition-colors">
-                <Settings size={16} />
-                Add Metrics
-              </button>
-            </div> : <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
-              {sectionConfig.selectedMetrics.map(metric => <div key={metric.id} className="flex flex-col gap-2 p-4 bg-zinc-900/50 border border-white/5 rounded-lg hover:bg-zinc-900/80 hover:border-white/10 transition-all">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] uppercase font-medium text-zinc-500 tracking-wide">
-                      {metric.label}
-                    </span>
-                    {metric.explanationKey && METRIC_EXPLANATIONS[metric.explanationKey] && <MetricTooltip label={metric.label} explanation={METRIC_EXPLANATIONS[metric.explanationKey]} />}
-                  </div>
-                  <div className="text-lg font-semibold text-white">
-                    {getMetricValue(metric.id)}
-                  </div>
-                </div>)}
-            </div>}
-        </div>
-      </div>
-
-      {/* Chart Section */}
-      <div className="flex-1 min-h-[400px] flex flex-col p-6 bg-[#0a0a0a]">
-        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1 text-xs font-medium text-white">
-              <span>Cumulative P&L</span>
-              <ChevronDown size={14} className="text-zinc-500" />
+            <div className="p-1.5 hover:bg-white/5 rounded-md cursor-pointer">
+              <TrendingUp size={18} />
             </div>
-            <div className="flex items-center gap-1 text-xs font-medium text-white">
-              <span>Total P&L</span>
-              <ChevronDown size={14} className="text-zinc-500" />
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10">
+              <div className="w-5 h-5 bg-orange-500/20 rounded flex items-center justify-center">
+                <Activity size={12} className="text-orange-500" />
+              </div>
+              <span className="text-xs font-mono text-zinc-400">0x1A2B...5678</span>
             </div>
           </div>
-          
-          <div className="flex items-center gap-3">
-            {/* Chart Type Toggle */}
-            <div className="flex bg-zinc-900/80 rounded-md p-1 gap-0.5 border border-white/10">
-              <button onClick={() => setChartType('area')} className={cn("px-3 py-1.5 text-[11px] font-medium rounded transition-all flex items-center gap-1.5", chartType === 'area' ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300")}>
-                <TrendingUp size={12} />
-                Area
-              </button>
-              <button onClick={() => setChartType('candlestick')} className={cn("px-3 py-1.5 text-[11px] font-medium rounded transition-all flex items-center gap-1.5", chartType === 'candlestick' ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300")}>
-                <BarChart3 size={12} />
-                Candles
-              </button>
-            </div>
-            <button className="p-1 text-zinc-500 hover:text-white">
-              <Maximize2 size={14} />
+        </header>}
+
+      {/* Page-level navigation (always visible, even when embedded) */}
+      <div className="flex items-center justify-between px-6 py-2 border-b border-white/5 bg-[#0a0a0a] gap-4">
+        <div className="flex items-center gap-4 min-w-0">
+          <div className="relative">
+            <button onClick={() => setShowAccountDropdown(!showAccountDropdown)} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-md text-xs font-medium text-white transition-colors">
+              Accounts · {selectedAccounts.length} <ChevronDown size={14} className={cn("transition-transform", showAccountDropdown && "rotate-180")} />
+            </button>
+            
+            {/* Account Multi-Select Dropdown */}
+            {showAccountDropdown && <div className="absolute top-full left-0 mt-2 w-72 bg-zinc-900 border border-white/10 rounded-lg shadow-xl z-50">
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+                  <span className="text-xs font-bold text-white uppercase tracking-wide">Filter Accounts</span>
+                  <button onClick={() => setShowAccountDropdown(false)} className="text-zinc-500 hover:text-white transition-colors">
+                    <X size={14} />
+                  </button>
+                </div>
+                
+                {/* Actions */}
+                <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10">
+                  <button onClick={selectAllAccounts} className="text-[10px] font-medium text-emerald-400 hover:text-emerald-300 transition-colors uppercase tracking-wide">
+                    Select All
+                  </button>
+                  <span className="text-zinc-600">·</span>
+                  <button onClick={clearAllAccounts} className="text-[10px] font-medium text-zinc-400 hover:text-zinc-300 transition-colors uppercase tracking-wide">
+                    Clear All
+                  </button>
+                </div>
+                
+                {/* Account List */}
+                <div className="max-h-64 overflow-y-auto">
+                  {MOCK_ACCOUNTS.map(account => {
+                const isSelected = selectedAccounts.includes(account.id);
+                const isLastSelected = selectedAccounts.length === 1 && isSelected;
+                return <button key={account.id} onClick={() => !isLastSelected && toggleAccount(account.id)} disabled={isLastSelected} className={cn("w-full flex items-center justify-between px-4 py-3 text-left transition-colors border-b border-white/5 last:border-b-0", isSelected ? "bg-emerald-500/10 hover:bg-emerald-500/15" : "hover:bg-white/5", isLastSelected && "opacity-50 cursor-not-allowed")}>
+                        <div className="flex-1">
+                          <div className="text-xs font-medium text-white mb-0.5">{account.name}</div>
+                          <div className="flex items-center gap-3 text-[10px] text-zinc-500">
+                            <span>Equity: {formatCurrency(account.equity)}</span>
+                            <span className={cn("font-medium", account.unrealisedPnl >= 0 ? "text-emerald-400" : "text-rose-400")}>
+                              {account.unrealisedPnl >= 0 ? '+' : ''}{formatCurrency(account.unrealisedPnl)}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <div className={cn("w-4 h-4 rounded border flex items-center justify-center transition-all", isSelected ? "bg-emerald-500 border-emerald-500" : "border-zinc-600")}>
+                          {isSelected && <Check size={12} className="text-white" />}
+                        </div>
+                      </button>;
+              })}
+                </div>
+                
+                {/* Footer */}
+                <div className="px-4 py-3 border-t border-white/10 bg-zinc-900/50">
+                  <div className="text-[10px] text-zinc-500">
+                    {selectedAccounts.length} of {MOCK_ACCOUNTS.length} accounts selected
+                  </div>
+                </div>
+              </div>}
+          </div>
+          <div className="flex bg-zinc-900/80 rounded-md p-1 gap-0.5">
+            {['1D', '1W', '1M', '1Y', 'All'].map(range => <button key={range} onClick={() => setTimeRange(range)} className={cn("px-3 py-1 text-[11px] font-medium rounded transition-all", timeRange === range ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300")}>
+                {range}
+              </button>)}
+          </div>
+          <div className="h-4 w-[1px] bg-white/10 mx-2" />
+          <div className="flex items-center gap-6 text-xs font-medium uppercase tracking-wider">
+            <button onClick={() => setPageTab('overview')} className={cn("transition-colors border-b-2 pb-2 -mb-2", pageTab === 'overview' ? "text-white border-emerald-500" : "text-zinc-500 border-transparent hover:text-white")}>
+              Overview
+            </button>
+            <button onClick={() => setPageTab('positions')} className={cn("transition-colors border-b-2 pb-2 -mb-2", pageTab === 'positions' ? "text-white border-emerald-500" : "text-zinc-500 border-transparent hover:text-white")}>
+              Positions
+            </button>
+            <button onClick={() => setPageTab('open-orders')} className={cn("transition-colors border-b-2 pb-2 -mb-2", pageTab === 'open-orders' ? "text-white border-emerald-500" : "text-zinc-500 border-transparent hover:text-white")}>
+              Open Orders
+            </button>
+            <button onClick={() => setPageTab('funding')} className={cn("transition-colors border-b-2 pb-2 -mb-2", pageTab === 'funding' ? "text-white border-emerald-500" : "text-zinc-500 border-transparent hover:text-white")}>
+              Funding
+            </button>
+            <button onClick={() => setPageTab('realized-pnl')} className={cn("transition-colors border-b-2 pb-2 -mb-2", pageTab === 'realized-pnl' ? "text-white border-emerald-500" : "text-zinc-500 border-transparent hover:text-white")}>
+              Realized P&amp;L
             </button>
           </div>
         </div>
-
-        <div className="flex-1">
-          {chartType === 'area' ? <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={CHART_DATA}>
-                <defs>
-                  <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.1} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{
-              fill: '#52525b',
-              fontSize: 10
-            }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} orientation="right" tick={{
-              fill: '#52525b',
-              fontSize: 10
-            }} domain={['dataMin - 50', 'dataMax + 50']} />
-                <Tooltip contentStyle={{
-              backgroundColor: '#18181b',
-              border: '1px solid #3f3f46',
-              borderRadius: '4px'
-            }} itemStyle={{
-              color: '#10b981',
-              fontSize: '12px'
-            }} />
-                <Area type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorValue)" />
-              </AreaChart>
-            </ResponsiveContainer> : <CandlestickChart data={CANDLESTICK_DATA} />}
-        </div>
+        {headerActions && <div className="flex items-center gap-2 shrink-0">
+            {headerActions}
+          </div>}
       </div>
 
-      {/* Dynamic Table Section */}
-      <div className="flex flex-col border-t border-white/5 bg-[#0d0d0d]">
-        <div className="flex items-center justify-between px-6 py-3 border-b border-white/5">
-          <div className="flex gap-6">
-            <button onClick={() => setActiveTableTab('health')} className={cn("text-xs font-bold transition-all border-b-2 -mb-3 pb-3", activeTableTab === 'health' ? "text-white border-emerald-500" : "text-zinc-500 border-transparent")}>
-              Accounts Health
-            </button>
-            <button onClick={() => setActiveTableTab('performance')} className={cn("text-xs font-bold transition-all border-b-2 -mb-3 pb-3", activeTableTab === 'performance' ? "text-white border-emerald-500" : "text-zinc-500 border-transparent")}>
-              Accounts Performance
-            </button>
-          </div>
-          <Maximize2 size={14} className="text-zinc-500 cursor-pointer hover:text-white" />
-        </div>
+      {pageTab === 'overview' ? <>
+          {/* Metrics Section */}
+          <div className="px-6 py-4 border-b border-white/5 bg-[#0d0d0d]">
+            <div className="flex flex-col gap-4">
+              {/* Header with Edit Button */}
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-medium text-white">Key Metrics</h2>
+                <button onClick={handleEditSection} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white rounded-md text-xs font-medium transition-colors">
+                  <Settings size={14} />
+                  Configure Metrics
+                </button>
+              </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="text-zinc-500 font-semibold border-b border-white/5">
-                <th className="px-6 py-4">ACCOUNT ↓</th>
-                {activeTableTab === 'health' ? <>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="EQUITY" explanationKey="equity" />
-                    </th>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="U. PNL" explanationKey="unrealised-pnl" />
-                    </th>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="INITIAL MARGIN" explanationKey="initial-margin" />
-                    </th>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="AVAIL TO TRADE" explanationKey="available-to-trade" />
-                    </th>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="AVAIL TO WITHDRAW" explanationKey="available-to-withdraw" />
-                    </th>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="MARGIN RATIO" explanationKey="margin-ratio" />
-                    </th>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="EXPOSURE" explanationKey="exposure" />
-                    </th>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="NET EXPOSURE" explanationKey="net-exposure" />
-                    </th>
-                    <th className="px-4 py-4 text-right whitespace-nowrap">
-                      <TableHeader label="ACCOUNT LEVERAGE" explanationKey="account-leverage" />
-                    </th>
-                    <th className="px-6 py-4"></th>
-                  </> : <>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="R. PNL" explanationKey="realised-pnl" />
-                    </th>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="U. PNL" explanationKey="unrealised-pnl" />
-                    </th>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="TOTAL PNL" explanationKey="total-pnl" />
-                    </th>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="TOTAL P&L %" explanationKey="total-pnl-percent" />
-                    </th>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="PROFIT FACTOR" explanationKey="profit-factor" />
-                    </th>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="WIN RATE" explanationKey="win-rate" />
-                    </th>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="MAX DRAWDOWN" explanationKey="max-drawdown" />
-                    </th>
-                    <th className="px-4 py-4 text-right">
-                      <TableHeader label="TRADING VOLUME" explanationKey="trading-volume" />
-                    </th>
-                    <th className="px-6 py-4"></th>
-                  </>}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredAccounts.map(acc => <tr key={acc.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors group">
-                  <td className="px-6 py-4 font-medium text-white">{acc.name}</td>
-                  {activeTableTab === 'health' ? <>
-                      <td className="px-4 py-4 text-right font-mono">{formatCurrency(acc.equity)}</td>
-                      <td className="px-4 py-4 text-right font-mono text-emerald-400">{formatCurrency(acc.unrealisedPnl)}</td>
-                      <td className="px-4 py-4 text-right font-mono">{formatCurrency(acc.initialMargin)}</td>
-                      <td className="px-4 py-4 text-right font-mono">{formatCurrency(acc.availableToTrade)}</td>
-                      <td className="px-4 py-4 text-right font-mono">{formatCurrency(acc.availableToWithdraw)}</td>
-                      <td className="px-4 py-4 text-right font-mono text-emerald-400">{acc.marginRatio}%</td>
-                      <td className="px-4 py-4 text-right font-mono">{formatCurrency(acc.exposure)}</td>
-                      <td className="px-4 py-4 text-right font-mono">{formatCurrency(acc.netExposure)}</td>
-                      <td className="px-4 py-4 text-right font-mono">{acc.leverage}</td>
-                    </> : <>
-                      <td className="px-4 py-4 text-right font-mono text-emerald-400">{formatCurrency(acc.realisedPnl)}</td>
-                      <td className="px-4 py-4 text-right font-mono text-emerald-400">{formatCurrency(acc.unrealisedPnl)}</td>
-                      <td className="px-4 py-4 text-right font-mono text-emerald-400">{formatCurrency(acc.realisedPnl + acc.unrealisedPnl)}</td>
-                      <td className="px-4 py-4 text-right font-mono text-emerald-400">12.30%</td>
-                      <td className="px-4 py-4 text-right font-mono text-emerald-400">{acc.profitFactor}</td>
-                      <td className="px-4 py-4 text-right font-mono text-emerald-400">{acc.winRate}%</td>
-                      <td className="px-4 py-4 text-right font-mono">{acc.maxDrawdown}%</td>
-                      <td className="px-4 py-4 text-right font-mono">{formatCurrency(acc.tradingVolume)}</td>
-                    </>}
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-white rounded text-[10px] font-bold">Deposit</button>
-                      <button className="p-1 text-zinc-500 hover:text-white"><MoreHorizontal size={16} /></button>
-                    </div>
-                  </td>
-                </tr>)}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              {/* Metrics Grid */}
+              {sectionConfig.selectedMetrics.length === 0 ? <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-white/10 rounded-lg">
+                  <div className="text-zinc-500 text-sm text-center mb-4">
+                    No metrics configured
+                  </div>
+                  <button onClick={handleEditSection} className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 rounded-lg text-sm font-medium transition-colors">
+                    <Settings size={16} />
+                    Add Metrics
+                  </button>
+                </div> : <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
+                  {sectionConfig.selectedMetrics.map(metric => <div key={metric.id} className="flex flex-col gap-2 p-4 bg-zinc-900/50 border border-white/5 rounded-lg hover:bg-zinc-900/80 hover:border-white/10 transition-all">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] uppercase font-medium text-zinc-500 tracking-wide">
+                          {metric.label}
+                        </span>
+                        {metric.explanationKey && METRIC_EXPLANATIONS[metric.explanationKey] && <MetricTooltip label={metric.label} explanation={METRIC_EXPLANATIONS[metric.explanationKey]} />}
+                      </div>
+                      <div className="text-lg font-semibold text-white">
+                        {getMetricValue(metric.id)}
+                      </div>
+                    </div>)}
+                </div>}
+            </div>
+          </div>
+
+          {/* Chart Section */}
+          <div className="flex-1 min-h-[400px] flex flex-col p-6 bg-[#0a0a0a]">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1 text-xs font-medium text-white">
+                  <span>Cumulative P&amp;L</span>
+                  <ChevronDown size={14} className="text-zinc-500" />
+                </div>
+                <div className="flex items-center gap-1 text-xs font-medium text-white">
+                  <span>Total P&amp;L</span>
+                  <ChevronDown size={14} className="text-zinc-500" />
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                {/* Chart Type Toggle */}
+                <div className="flex bg-zinc-900/80 rounded-md p-1 gap-0.5 border border-white/10">
+                  <button onClick={() => setChartType('area')} className={cn("px-3 py-1.5 text-[11px] font-medium rounded transition-all flex items-center gap-1.5", chartType === 'area' ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300")}>
+                    <TrendingUp size={12} />
+                    Area
+                  </button>
+                  <button onClick={() => setChartType('candlestick')} className={cn("px-3 py-1.5 text-[11px] font-medium rounded transition-all flex items-center gap-1.5", chartType === 'candlestick' ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300")}>
+                    <BarChart3 size={12} />
+                    Candles
+                  </button>
+                </div>
+                <button className="p-1 text-zinc-500 hover:text-white">
+                  <Maximize2 size={14} />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1">
+              {chartType === 'area' ? <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={CHART_DATA}>
+                    <defs>
+                      <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.1} />
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{
+                  fill: '#52525b',
+                  fontSize: 10
+                }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} orientation="right" tick={{
+                  fill: '#52525b',
+                  fontSize: 10
+                }} domain={['dataMin - 50', 'dataMax + 50']} />
+                    <Tooltip contentStyle={{
+                  backgroundColor: '#18181b',
+                  border: '1px solid #3f3f46',
+                  borderRadius: '4px'
+                }} itemStyle={{
+                  color: '#10b981',
+                  fontSize: '12px'
+                }} />
+                    <Area type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorValue)" />
+                  </AreaChart>
+                </ResponsiveContainer> : <CandlestickChart data={CANDLESTICK_DATA} />}
+            </div>
+          </div>
+
+          {/* Dynamic Table Section */}
+          <div className="flex flex-col border-t border-white/5 bg-[#0d0d0d]">
+            <div className="flex items-center justify-between px-6 py-3 border-b border-white/5">
+              <div className="flex gap-6">
+                <button onClick={() => setActiveTableTab('health')} className={cn("text-xs font-bold transition-all border-b-2 -mb-3 pb-3", activeTableTab === 'health' ? "text-white border-emerald-500" : "text-zinc-500 border-transparent")}>
+                  Accounts Health
+                </button>
+                <button onClick={() => setActiveTableTab('performance')} className={cn("text-xs font-bold transition-all border-b-2 -mb-3 pb-3", activeTableTab === 'performance' ? "text-white border-emerald-500" : "text-zinc-500 border-transparent")}>
+                  Accounts Performance
+                </button>
+              </div>
+              <Maximize2 size={14} className="text-zinc-500 cursor-pointer hover:text-white" />
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="text-zinc-500 font-semibold border-b border-white/5">
+                    <th className="px-6 py-4">ACCOUNT ↓</th>
+                    {activeTableTab === 'health' ? <>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="EQUITY" explanationKey="equity" />
+                        </th>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="U. PNL" explanationKey="unrealised-pnl" />
+                        </th>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="INITIAL MARGIN" explanationKey="initial-margin" />
+                        </th>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="AVAIL TO TRADE" explanationKey="available-to-trade" />
+                        </th>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="AVAIL TO WITHDRAW" explanationKey="available-to-withdraw" />
+                        </th>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="MARGIN RATIO" explanationKey="margin-ratio" />
+                        </th>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="EXPOSURE" explanationKey="exposure" />
+                        </th>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="NET EXPOSURE" explanationKey="net-exposure" />
+                        </th>
+                        <th className="px-4 py-4 text-right whitespace-nowrap">
+                          <TableHeader label="ACCOUNT LEVERAGE" explanationKey="account-leverage" />
+                        </th>
+                        <th className="px-6 py-4"></th>
+                      </> : <>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="R. PNL" explanationKey="realised-pnl" />
+                        </th>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="U. PNL" explanationKey="unrealised-pnl" />
+                        </th>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="TOTAL PNL" explanationKey="total-pnl" />
+                        </th>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="TOTAL P&L %" explanationKey="total-pnl-percent" />
+                        </th>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="PROFIT FACTOR" explanationKey="profit-factor" />
+                        </th>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="WIN RATE" explanationKey="win-rate" />
+                        </th>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="MAX DRAWDOWN" explanationKey="max-drawdown" />
+                        </th>
+                        <th className="px-4 py-4 text-right">
+                          <TableHeader label="TRADING VOLUME" explanationKey="trading-volume" />
+                        </th>
+                        <th className="px-6 py-4"></th>
+                      </>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredAccounts.map(acc => <tr key={acc.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors group">
+                      <td className="px-6 py-4 font-medium text-white">{acc.name}</td>
+                      {activeTableTab === 'health' ? <>
+                          <td className="px-4 py-4 text-right font-mono">{formatCurrency(acc.equity)}</td>
+                          <td className="px-4 py-4 text-right font-mono text-emerald-400">{formatCurrency(acc.unrealisedPnl)}</td>
+                          <td className="px-4 py-4 text-right font-mono">{formatCurrency(acc.initialMargin)}</td>
+                          <td className="px-4 py-4 text-right font-mono">{formatCurrency(acc.availableToTrade)}</td>
+                          <td className="px-4 py-4 text-right font-mono">{formatCurrency(acc.availableToWithdraw)}</td>
+                          <td className="px-4 py-4 text-right font-mono text-emerald-400">{acc.marginRatio}%</td>
+                          <td className="px-4 py-4 text-right font-mono">{formatCurrency(acc.exposure)}</td>
+                          <td className="px-4 py-4 text-right font-mono">{formatCurrency(acc.netExposure)}</td>
+                          <td className="px-4 py-4 text-right font-mono">{acc.leverage}</td>
+                        </> : <>
+                          <td className="px-4 py-4 text-right font-mono text-emerald-400">{formatCurrency(acc.realisedPnl)}</td>
+                          <td className="px-4 py-4 text-right font-mono text-emerald-400">{formatCurrency(acc.unrealisedPnl)}</td>
+                          <td className="px-4 py-4 text-right font-mono text-emerald-400">{formatCurrency(acc.realisedPnl + acc.unrealisedPnl)}</td>
+                          <td className="px-4 py-4 text-right font-mono text-emerald-400">12.30%</td>
+                          <td className="px-4 py-4 text-right font-mono text-emerald-400">{acc.profitFactor}</td>
+                          <td className="px-4 py-4 text-right font-mono text-emerald-400">{acc.winRate}%</td>
+                          <td className="px-4 py-4 text-right font-mono">{acc.maxDrawdown}%</td>
+                          <td className="px-4 py-4 text-right font-mono">{formatCurrency(acc.tradingVolume)}</td>
+                        </>}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button className="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-white rounded text-[10px] font-bold">Deposit</button>
+                          <button className="p-1 text-zinc-500 hover:text-white"><MoreHorizontal size={16} /></button>
+                        </div>
+                      </td>
+                    </tr>)}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </> : <div className="px-6 py-8">
+          <div className="border border-white/10 bg-zinc-900/30 rounded-lg p-6">
+            <div className="text-sm font-medium text-white mb-1">
+              {pageTab === 'positions' ? 'Positions' : pageTab === 'open-orders' ? 'Open Orders' : pageTab === 'funding' ? 'Funding' : 'Realized P&L'}
+            </div>
+            <div className="text-xs text-zinc-400">
+              Coming soon — this tab is wired up and ready for data + table components.
+            </div>
+          </div>
+        </div>}
 
       {/* Metric Configuration Modal */}
       <MetricConfigModal isOpen={modalOpen} onClose={() => setModalOpen(false)} section={sectionConfig} onSave={handleSaveSection} availableMetrics={ALL_AVAILABLE_METRICS} />
