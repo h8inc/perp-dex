@@ -438,9 +438,11 @@ export const TradingBoxPrimitive = ({
           <>
             {/* Header Tabs */}
             <div className="flex h-10 items-center justify-between rounded-t-xl border-b border-white/10 bg-[#0b0e11] overflow-hidden shrink-0">
-              <TradingTabs activeTab={activeTab} onTabChange={setActiveTab} />
-              <div className="flex items-center px-4 shrink-0">
-                {isMobileSheet && (
+              <div className="flex-1 min-w-0">
+                <TradingTabs activeTab={activeTab} onTabChange={setActiveTab} />
+              </div>
+              {isMobileSheet && (
+                <div className="flex items-center px-2 shrink-0">
                   <button
                     className="p-2 text-gray-400 hover:text-white transition-colors"
                     onClick={() => onToggleSheet && onToggleSheet()}
@@ -452,8 +454,8 @@ export const TradingBoxPrimitive = ({
                       <ChevronUp className="h-4 w-4" />
                     )}
                   </button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
             {/* Form Content - Only show when sheet is open */}
