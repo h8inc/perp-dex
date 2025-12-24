@@ -663,12 +663,12 @@ export const TradingInterface = () => {
 
         {/* Main content */}
         <div className="flex-1 min-w-0 flex flex-col min-h-0">
-          {activeView === 'portfolio' ? <div className="flex-1 min-h-0 overflow-y-auto">
+          {activeView === 'portfolio' ? <div className="flex-1 min-h-0 overflow-y-auto [scrollbar-gutter:stable]">
               <TradingDashboard embedded headerActions={walletAction} />
             </div> : <>
               <MarketTicker rightActions={walletAction} />
               
-              <div className="flex flex-1 min-h-0 overflow-hidden flex-col lg:flex-row">
+              <div className="flex flex-1 min-h-0 overflow-y-auto overflow-x-hidden [scrollbar-gutter:stable] flex-col lg:flex-row">
         {/* Left Column: Chart & Bottom Panel */}
                 <div className="flex flex-1 flex-col min-w-0 min-h-0">
           <ChartSection />
