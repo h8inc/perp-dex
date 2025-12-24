@@ -64,6 +64,7 @@ export const TradingBoxPrimitive = ({
   const [isTPSLEnabled, setIsTPSLEnabled] = useState(false);
   const [takeProfitEntries, setTakeProfitEntries] = useState<Array<{ id: string; price: string; percentage: string }>>([]);
   const [stopLossEntries, setStopLossEntries] = useState<Array<{ id: string; price: string; percentage: string }>>([]);
+  const [showSwapLimitBanner, setShowSwapLimitBanner] = useState(true);
   
   // Network selection state
   const [selectedNetwork, setSelectedNetwork] = useState<{ id: string; name: string; icon?: string } | undefined>({
@@ -233,11 +234,42 @@ export const TradingBoxPrimitive = ({
     </div>
   );
 
+  const renderPrimaryAction = (className?: string) => {
+    const isDisabled = !hasPay || (orderType === 'Limit' && !hasLimitPrice);
+
+    if (isWalletConnected) {
+      return (
+        <button
+          disabled={isDisabled}
+          className={`w-full h-11 rounded-lg text-sm font-semibold transition-colors ${
+            isDisabled
+              ? 'bg-white/5 text-gray-500 cursor-not-allowed'
+              : 'bg-[#15F46F] text-[#06171E] hover:bg-[#12d160]'
+          } ${className ?? ''}`}
+        >
+          Trade
+        </button>
+      );
+    }
+
+    return (
+      <button
+        onClick={onConnectWallet}
+        className={`w-full h-11 rounded-lg bg-[#15F46F] hover:bg-[#12d160] text-[#06171E] text-sm font-semibold transition-colors ${
+          className ?? ''
+        }`}
+      >
+        Connect Wallet
+      </button>
+    );
+  };
+
   const renderInputs = () => {
     if (isSwap) {
       return (
-        <>
-          <div className="relative">
+        <div className="flex flex-col gap-2">
+          {/* Pay / Receive stack (arrow is decorative and should not affect spacing) */}
+          <div className="relative flex flex-col gap-2">
             <TokenInput
               label="Pay"
               value={payAmount}
@@ -249,15 +281,7 @@ export const TradingBoxPrimitive = ({
               }}
               compact
             />
-          </div>
 
-          <div className="relative h-0 -my-2 z-10 flex items-center justify-center">
-            <button className="flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-[#0b0e11] bg-[#15191e] text-gray-400 shadow-lg hover:bg-[#1a1d26] hover:text-white transition-colors">
-              <ArrowDown className="h-5 w-5" />
-            </button>
-          </div>
-
-          <div className="relative">
             <TokenInput
               label="Receive"
               value={longAmount}
@@ -270,34 +294,58 @@ export const TradingBoxPrimitive = ({
               readOnly
               compact
             />
+
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+              <button className="flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-[#0b0e11] bg-[#15191e] text-gray-400 shadow-lg hover:bg-[#1a1d26] hover:text-white transition-colors">
+                <ArrowDown className="h-5 w-5" />
+              </button>
+            </div>
           </div>
 
           {orderType === 'Limit' && (
             <>
               {renderLimitPriceInput()}
-              <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2 text-[12px] text-blue-100 flex items-start gap-2">
-                <span className="mt-[2px]">ℹ️</span>
-                <span>
-                  The actual execution price may differ from the set limit price due to fees and price impact. This ensures that you receive at least the minimum receive amount.
-                </span>
-              </div>
+              {showSwapLimitBanner && (
+                <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2 text-[12px] text-blue-100 flex items-start gap-2 relative">
+                  <span className="mt-[2px]">ℹ️</span>
+                  <span className="pr-6">
+                    The actual execution price may differ from the set limit price due to fees and price impact. This ensures that you receive at least the minimum receive amount.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setShowSwapLimitBanner(false)}
+                    className="absolute right-2 top-2 p-1 rounded hover:bg-white/10 transition-colors"
+                    aria-label="Dismiss"
+                  >
+                    <X className="h-4 w-4 text-blue-100/80" />
+                  </button>
+                </div>
+              )}
+              {/* CTA should live directly after banner (or directly after fields if banner dismissed) */}
+              {renderPrimaryAction()}
             </>
           )}
 
-          {orderType === 'TWAP' && renderTwapFields(true)}
+          {orderType === 'TWAP' && (
+            <>
+              {renderTwapFields(true)}
+              {/* CTA should live directly after the TWAP fields (per spec) */}
+              {renderPrimaryAction()}
+            </>
+          )}
 
           {orderType === 'StopMarket' && renderSimplePriceInput('Stop Price')}
-        </>
+        </div>
       );
     }
 
     // Long / Short
     if (orderType === 'TPSL') {
       return (
-        <>
+        <div className="flex flex-col gap-2">
           {renderSimplePriceInput('Close Price')}
           {renderSimplePriceInput('Trigger Price')}
-        </>
+        </div>
       );
     }
 
@@ -305,8 +353,9 @@ export const TradingBoxPrimitive = ({
     const receiveLabel = activeTab;
 
     return (
-      <>
-        <div className="relative">
+      <div className="flex flex-col gap-2">
+        {/* Pay / Receive stack (arrow is decorative and should not affect spacing) */}
+        <div className="relative flex flex-col gap-2">
           <TokenInput
             label={payLabel}
             value={payAmount}
@@ -318,15 +367,7 @@ export const TradingBoxPrimitive = ({
             }}
             compact
           />
-        </div>
 
-        <div className="relative h-0 -my-2 z-10 flex items-center justify-center">
-          <button className="flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-[#0b0e11] bg-[#15191e] text-gray-400 shadow-lg hover:bg-[#1a1d26] hover:text-white transition-colors">
-            <ArrowDown className="h-5 w-5" />
-          </button>
-        </div>
-
-        <div className="relative">
           <TokenInput
             label={receiveLabel}
             value={longAmount}
@@ -339,12 +380,18 @@ export const TradingBoxPrimitive = ({
             readOnly
             compact
           />
+
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+            <button className="flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-[#0b0e11] bg-[#15191e] text-gray-400 shadow-lg hover:bg-[#1a1d26] hover:text-white transition-colors">
+              <ArrowDown className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         {orderType === 'Limit' && renderLimitPriceInput()}
         {orderType === 'StopMarket' && renderSimplePriceInput('Stop Price')}
         {orderType === 'TWAP' && renderTwapFields(false)}
-      </>
+      </div>
     );
   };
 
@@ -461,18 +508,38 @@ export const TradingBoxPrimitive = ({
             {isSwap ? (
               // Swap Footer Content
               <>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-500">Min. Receive</span>
-                  <span className="text-white">-</span>
-                </div>
+                {/* For Swap->TWAP and Swap->Limit, CTA is rendered inside renderInputs above. */}
+                {orderType !== 'TWAP' && orderType !== 'Limit' && (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Min. Receive</span>
+                      <span className="text-white">-</span>
+                    </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-500">Price Impact / Fees</span>
-                  <span className="text-gray-500">
-                    <span className="text-white">0.000%</span> /{' '}
-                    <span className="text-white">0.000%</span>
-                  </span>
-                </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Price Impact / Fees</span>
+                      <span className="text-gray-500">
+                        <span className="text-white">0.000%</span> /{' '}
+                        <span className="text-white">0.000%</span>
+                      </span>
+                    </div>
+                  </>
+                )}
+
+                {/* Swap -> Limit summary rows */}
+                {orderType === 'Limit' && (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Min. Receive</span>
+                      <span className="text-white">-</span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Price Impact</span>
+                      <span className="text-white">0.000%</span>
+                    </div>
+                  </>
+                )}
 
                 <div
                   className="flex items-center justify-between cursor-pointer group py-1"
@@ -490,57 +557,119 @@ export const TradingBoxPrimitive = ({
 
                 {isExecDetailsOpen && (
                   <div className="flex flex-col gap-2.5 pl-0 animate-in fade-in slide-in-from-top-1 duration-200">
+                    {orderType === 'TWAP' ? (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-500">Fees</span>
+                          <span className="text-white">-</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <span className="text-gray-500">Network Fee</span>
+                            <Info className="h-3 w-3 text-gray-500" />
+                          </div>
+                          <span className="text-white">-$0.24</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-500">Acceptable Swap Impact</span>
+                          <span className="text-white">0.00%</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-500">Available liquidity</span>
+                          <span className="text-white">-</span>
+                        </div>
+                      </>
+                    ) : orderType === 'Limit' ? (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-500">Fees</span>
+                          <span className="text-white">-</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <span className="text-gray-500">Network Fee</span>
+                            <Info className="h-3 w-3 text-gray-500" />
+                          </div>
+                          <span className="text-white">-$0.24</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-500">Available liquidity</span>
+                          <span className="text-white">-</span>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-500">Fees</span>
+                          <span className="text-white">-</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <span className="text-gray-500">Network Fee</span>
+                            <Info className="h-3 w-3 text-gray-500" />
+                          </div>
+                          <span className="text-white">-$0.24</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-500">Spread</span>
+                          <span className="text-white">0.00%</span>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-1">
+                          <div className="flex items-center gap-1">
+                            <span className="text-gray-500">Allowed Slippage</span>
+                            <Info className="h-3 w-3 text-gray-500" />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button className="rounded bg-white/5 px-2 py-0.5 text-xs text-gray-500 hover:text-white">
+                              -
+                            </button>
+                            <span className="text-white">1%</span>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* Swap -> Limit / Swap -> TWAP CTA is rendered above, so do not render here */}
+                {orderType !== 'TWAP' && orderType !== 'Limit' && renderPrimaryAction('mt-4')}
+
+                {/* Swap -> Limit price/market info block (below execution details) */}
+                {orderType === 'Limit' && (
+                  <div className="pt-2 mt-2 border-t border-white/10 flex flex-col gap-2.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-500">Fees</span>
+                      <span className="text-gray-500">Swap</span>
                       <span className="text-white">-</span>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        <span className="text-gray-500">Network Fee</span>
-                        <Info className="h-3 w-3 text-gray-500" />
-                      </div>
-                      <span className="text-white">-$0.24</span>
+                      <span className="text-gray-500">USDC price</span>
+                      <span className="text-white">-</span>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-500">Spread</span>
-                      <span className="text-white">0.00%</span>
+                      <span className="text-gray-500">BTC price</span>
+                      <span className="text-white">-</span>
                     </div>
 
-                    <div className="flex items-center justify-between pt-1">
-                      <div className="flex items-center gap-1">
-                        <span className="text-gray-500">Allowed Slippage</span>
-                        <Info className="h-3 w-3 text-gray-500" />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button className="rounded bg-white/5 px-2 py-0.5 text-xs text-gray-500 hover:text-white">
-                          -
-                        </button>
-                        <span className="text-white">1%</span>
-                      </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Available liquidity</span>
+                      <span className="text-white">-</span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Price</span>
+                      <span className="text-white">-</span>
                     </div>
                   </div>
-                )}
-
-                {isWalletConnected ? (
-                  <button
-                    disabled={!(hasPay && (orderType !== 'Limit' || hasLimitPrice))}
-                    className={`mt-4 w-full h-11 rounded-lg text-sm font-semibold transition-colors ${
-                      hasPay && (orderType !== 'Limit' || hasLimitPrice)
-                        ? 'bg-[#15F46F] text-[#06171E] hover:bg-[#12d160]'
-                        : 'bg-white/5 text-gray-500 cursor-not-allowed'
-                    }`}
-                  >
-                    Trade
-                  </button>
-                ) : (
-                  <button
-                    onClick={onConnectWallet}
-                    className="mt-4 w-full h-11 rounded-lg bg-[#15F46F] hover:bg-[#12d160] text-[#06171E] text-sm font-semibold transition-colors"
-                  >
-                    Connect Wallet
-                  </button>
                 )}
               </>
             ) : (
