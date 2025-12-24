@@ -15,14 +15,14 @@ type OrderBookItem = {
   total: number;
   type: 'bid' | 'ask';
 };
-const generateOrderBook = (): {
+const generateOrderBook = (levels: number = 15): {
   asks: OrderBookItem[];
   bids: OrderBookItem[];
 } => {
   const currentPrice = 90528;
   const asks: OrderBookItem[] = [];
   const bids: OrderBookItem[] = [];
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < levels; i++) {
     const askPrice = currentPrice + i * 10 + Math.random() * 5;
     const bidPrice = currentPrice - i * 10 - Math.random() * 5;
     asks.push({
@@ -220,7 +220,7 @@ const MobileTopBar = ({
       <img src="/logo.svg" alt="Extended" className="h-5 w-auto select-none" />
       <button onClick={onOpenNav} className="p-2 text-white hover:text-[#15F46F] transition-colors bg-white/5 hover:bg-white/10 rounded-lg" aria-label="Open navigation">
         <Menu className="w-5 h-5" />
-      </button>
+          </button>
     </div>;
 };
 const MarketTicker = ({
@@ -243,9 +243,9 @@ const MarketTicker = ({
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {rightActions}
-          <button className="p-1.5 hover:bg-white/5 rounded-full shrink-0">
-            <MoreHorizontal size={16} className="text-gray-400" />
-          </button>
+        <button className="p-1.5 hover:bg-white/5 rounded-full shrink-0">
+          <MoreHorizontal size={16} className="text-gray-400" />
+        </button>
         </div>
       </div>
 
@@ -253,50 +253,50 @@ const MarketTicker = ({
       <div className="hidden md:flex h-14 items-center border-b border-white/10 bg-[#0b0e11] px-4 sm:px-6 text-xs">
         {/* Scrollable stats strip */}
         <div className="flex items-center gap-6 min-w-0 flex-1 overflow-x-auto no-scrollbar">
-          <div className="flex items-center gap-2 pr-4 border-r border-white/10 min-w-fit">
-            <div className="flex items-center gap-1.5 cursor-pointer hover:bg-white/5 p-1 rounded">
-              {getTokenIcon('BTC', 20)}
-              <span className="text-base font-bold text-white">BTC / USD</span>
-              <ChevronDown size={14} />
-            </div>
+        <div className="flex items-center gap-2 pr-4 border-r border-white/10 min-w-fit">
+          <div className="flex items-center gap-1.5 cursor-pointer hover:bg-white/5 p-1 rounded">
+            {getTokenIcon('BTC', 20)}
+            <span className="text-base font-bold text-white">BTC / USD</span>
+            <ChevronDown size={14} />
           </div>
-          
+        </div>
+        
           <div className="flex flex-col min-w-fit">
-            <span className="text-lg font-bold text-white">90,528 USD</span>
-            <span className="text-[#00ff9d] text-[10px]">$90,528</span>
-          </div>
+          <span className="text-lg font-bold text-white">90,528 USD</span>
+          <span className="text-[#00ff9d] text-[10px]">$90,528</span>
+        </div>
 
           <div className="flex flex-col gap-0.5 min-w-fit">
-            <span className="text-gray-500 text-[10px]">MARK PRICE</span>
-            <span className="text-white">90,523 USD</span>
-          </div>
+          <span className="text-gray-500 text-[10px]">MARK PRICE</span>
+          <span className="text-white">90,523 USD</span>
+        </div>
 
           <div className="flex flex-col gap-0.5 min-w-fit">
-            <span className="text-gray-500 text-[10px]">INDEX PRICE</span>
-            <span className="text-white">90,569 USD</span>
-          </div>
+          <span className="text-gray-500 text-[10px]">INDEX PRICE</span>
+          <span className="text-white">90,569 USD</span>
+        </div>
 
           <div className="flex flex-col gap-0.5 min-w-fit">
-            <span className="text-gray-500 text-[10px]">FUNDING RATE</span>
-            <div className="flex gap-1">
-              <span className="text-[#00ff9d]">0.0003%</span>
-              <span className="text-gray-400">47:32</span>
-            </div>
+          <span className="text-gray-500 text-[10px]">FUNDING RATE</span>
+          <div className="flex gap-1">
+            <span className="text-[#00ff9d]">0.0003%</span>
+            <span className="text-gray-400">47:32</span>
           </div>
+        </div>
 
           <div className="flex flex-col gap-0.5 min-w-fit">
-            <span className="text-gray-500 text-[10px]">24H CHANGE</span>
-            <span className="text-[#ff4d4d]">-1,847 USD -2.00%</span>
-          </div>
+          <span className="text-gray-500 text-[10px]">24H CHANGE</span>
+          <span className="text-[#ff4d4d]">-1,847 USD -2.00%</span>
+        </div>
 
           <div className="flex flex-col gap-0.5 min-w-fit">
-            <span className="text-gray-500 text-[10px]">OPEN INTEREST</span>
-            <span className="text-white">29,808,455 USD</span>
-          </div>
+          <span className="text-gray-500 text-[10px]">OPEN INTEREST</span>
+          <span className="text-white">29,808,455 USD</span>
+        </div>
 
           <div className="flex flex-col gap-0.5 min-w-fit">
-            <span className="text-gray-500 text-[10px]">24H VOLUME</span>
-            <span className="text-white">452,119,618 USD</span>
+          <span className="text-gray-500 text-[10px]">24H VOLUME</span>
+          <span className="text-white">452,119,618 USD</span>
           </div>
         </div>
 
@@ -334,9 +334,9 @@ const ChartSection = () => {
         </div>
 
         {/* Main Chart Area */}
-        <div className="relative flex-1 min-h-[400px]">
-          <div className="absolute inset-0 p-4">
-            <div className="flex items-center gap-4 text-xs text-gray-400 mb-2">
+        <div className="relative flex-1 min-h-0">
+          <div className="absolute inset-0 p-4 flex flex-col min-h-0">
+            <div className="flex items-center gap-4 text-xs text-gray-400 mb-2 shrink-0">
               <span>BTC-USD (Last)</span>
               <span>1h</span>
               <span>Extended</span>
@@ -358,7 +358,7 @@ const ChartSection = () => {
               </div>
             </div>
           
-          <div className="w-full h-[90%]">
+            <div className="flex-1 min-h-0">
             <CandlestickChart data={chartData} />
           </div>
         </div>
@@ -425,7 +425,35 @@ const ChartSection = () => {
   );
 };
 const OrderBook = () => {
-  return <div className="flex w-[280px] flex-col border-r border-white/10 bg-[#0b0e11]">
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [rowsPerSide, setRowsPerSide] = useState(14);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+
+    const update = () => {
+      const h = el.clientHeight;
+      // Approximate fixed chrome height in px: header (40) + col header (~24) + mid price (~40) + bottom controls (~44) + padding (~16)
+      const chrome = 40 + 24 + 40 + 44 + 16;
+      const rowH = 18; // px-3 py-0.5 text-xs rows are ~18px tall
+      const usable = Math.max(0, h - chrome);
+      const next = Math.max(10, Math.min(40, Math.floor(usable / 2 / rowH)));
+      setRowsPerSide(next);
+    };
+
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const {
+    asks,
+    bids
+  } = useMemo(() => generateOrderBook(rowsPerSide * 2 + 6), [rowsPerSide]);
+
+  return <div ref={containerRef} className="flex h-full min-h-0 w-[280px] flex-col border-r border-white/10 bg-[#0b0e11]">
       <div className="flex h-10 items-center justify-between border-b border-white/10 px-3">
         <div className="flex gap-4 text-xs font-medium">
           <button className="text-white border-b-2 border-[#00ff9d] pb-2.5 mt-2.5">Order Book</button>
@@ -443,7 +471,7 @@ const OrderBook = () => {
       <div className="flex-1 overflow-hidden flex flex-col">
         {/* Asks (Red) */}
         <div className="flex-1 overflow-hidden flex flex-col justify-end">
-          {asks.slice(0, 14).map((ask, i) => <div key={i} className="relative flex items-center justify-between px-3 py-0.5 text-xs hover:bg-white/5 cursor-pointer group">
+          {asks.slice(0, rowsPerSide).map((ask, i) => <div key={i} className="relative flex items-center justify-between px-3 py-0.5 text-xs hover:bg-white/5 cursor-pointer group">
               <span className="text-[#ff4d4d] z-10">{ask.price.toFixed(0)}</span>
               <span className="text-gray-300 z-10 group-hover:text-white">{ask.size.toFixed(4)}</span>
               <span className="text-gray-500 z-10">{ask.total.toFixed(4)}</span>
@@ -464,7 +492,7 @@ const OrderBook = () => {
 
         {/* Bids (Green) */}
         <div className="flex-1 overflow-hidden">
-          {bids.slice(0, 14).map((bid, i) => <div key={i} className="relative flex items-center justify-between px-3 py-0.5 text-xs hover:bg-white/5 cursor-pointer group">
+          {bids.slice(0, rowsPerSide).map((bid, i) => <div key={i} className="relative flex items-center justify-between px-3 py-0.5 text-xs hover:bg-white/5 cursor-pointer group">
               <span className="text-[#00ff9d] z-10">{bid.price.toFixed(0)}</span>
               <span className="text-gray-300 z-10 group-hover:text-white">{bid.size.toFixed(4)}</span>
               <span className="text-gray-500 z-10">{bid.total.toFixed(4)}</span>
@@ -504,7 +532,7 @@ const BottomPanel = ({
     exposure: (Math.random() * 20000).toFixed(2) + ' USD',
     accountLeverage: (Math.random() * 10).toFixed(1)
   }), [isWalletConnected]);
-  return <div className="flex-1 flex flex-col bg-[#0b0e11] min-h-[200px] border-t border-white/10">
+  return <div className="shrink-0 flex flex-col bg-[#0b0e11] border-t border-white/10 h-[220px] md:h-[240px] lg:h-[280px] xl:h-[320px] min-h-0">
         <div className="flex items-center gap-6 px-4 pt-7 border-b border-white/10 overflow-x-auto no-scrollbar">
             {TABS_BOTTOM.map(tab => <button key={tab} onClick={() => setActiveTab(tab)} className={cn("py-3 text-xs font-medium whitespace-nowrap transition-colors border-b-2", activeTab === tab ? "text-white border-white" : "text-gray-500 border-transparent hover:text-gray-300")}>
                     {tab}
@@ -512,7 +540,7 @@ const BottomPanel = ({
         </div>
         
         {/* Content Area */}
-        <div className="flex-1 p-0 overflow-auto">
+        <div className="flex-1 p-0 overflow-hidden">
             {activeTab === 'Account' && <div className="px-4 py-4">
                     {!isWalletConnected ? <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div className="text-gray-400 text-sm">Connect your wallet to view account stats.</div>
@@ -634,41 +662,43 @@ export const TradingInterface = () => {
         />
 
         {/* Main content */}
-        <div className="flex-1 min-w-0 overflow-y-auto">
-          {activeView === 'portfolio' ? <TradingDashboard embedded headerActions={walletAction} /> : <>
+        <div className="flex-1 min-w-0 flex flex-col min-h-0">
+          {activeView === 'portfolio' ? <div className="flex-1 min-h-0 overflow-y-auto">
+              <TradingDashboard embedded headerActions={walletAction} />
+            </div> : <>
               <MarketTicker rightActions={walletAction} />
-            
-              <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
-                {/* Left Column: Chart & Bottom Panel */}
-                <div className="flex flex-1 flex-col min-w-0">
-                  <ChartSection />
-                  <BottomPanel isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} />
-                </div>
+              
+              <div className="flex flex-1 min-h-0 overflow-hidden flex-col lg:flex-row">
+        {/* Left Column: Chart & Bottom Panel */}
+                <div className="flex flex-1 flex-col min-w-0 min-h-0">
+          <ChartSection />
+          <BottomPanel isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} />
+        </div>
 
-                {/* Middle Column: Order Book */}
-                <div className="hidden lg:block border-l border-white/10 w-[280px] shrink-0">
-                  <OrderBook />
-                </div>
+        {/* Middle Column: Order Book */}
+                <div className="hidden lg:block border-l border-white/10 w-[280px] shrink-0 min-h-0">
+          <OrderBook />
+        </div>
 
-                {/* Right Column: Order Entry */}
-                <div className="hidden lg:block border-l border-white/10 bg-[#0b0e11] overflow-y-auto lg:flex-[0.32] lg:min-w-[360px] lg:max-w-[520px]">
-                  <TradingBoxPrimitive isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
-                </div>
-              </div>
+        {/* Right Column: Order Entry */}
+                <div className="hidden lg:flex flex-col border-l border-white/10 bg-[#0b0e11] lg:flex-[0.32] lg:min-w-[360px] lg:max-w-[520px] min-h-0">
+          <TradingBoxPrimitive isWalletConnected={isWalletConnected} onConnectWallet={() => setIsWalletConnected(true)} onDisconnect={() => setIsWalletConnected(false)} />
+        </div>
+      </div>
 
-              {/* Mobile bottom sheet for TradingBox */}
-              <div className="fixed inset-x-0 bottom-0 z-50 lg:hidden">
-                <TradingBoxPrimitive
-                  isMobileSheet
-                  isSheetOpen={isMobileSheetOpen}
-                  onToggleSheet={() => setIsMobileSheetOpen(o => !o)}
-                  isWalletConnected={isWalletConnected}
-                  onConnectWallet={() => setIsWalletConnected(true)}
-                  onDisconnect={() => setIsWalletConnected(false)}
-                />
+      {/* Mobile bottom sheet for TradingBox */}
+      <div className="fixed inset-x-0 bottom-0 z-50 lg:hidden">
+        <TradingBoxPrimitive
+          isMobileSheet
+          isSheetOpen={isMobileSheetOpen}
+          onToggleSheet={() => setIsMobileSheetOpen(o => !o)}
+          isWalletConnected={isWalletConnected}
+          onConnectWallet={() => setIsWalletConnected(true)}
+          onDisconnect={() => setIsWalletConnected(false)}
+        />
               </div>
             </>}
-        </div>
+      </div>
       </div>
     </div>;
 };
