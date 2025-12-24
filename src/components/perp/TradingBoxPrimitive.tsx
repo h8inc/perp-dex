@@ -65,6 +65,8 @@ export const TradingBoxPrimitive = ({
   const [takeProfitEntries, setTakeProfitEntries] = useState<Array<{ id: string; price: string; percentage: string }>>([]);
   const [stopLossEntries, setStopLossEntries] = useState<Array<{ id: string; price: string; percentage: string }>>([]);
   const [showSwapLimitBanner, setShowSwapLimitBanner] = useState(true);
+  const [tpslClosePrice, setTpslClosePrice] = useState('');
+  const [tpslTriggerPrice, setTpslTriggerPrice] = useState('');
   
   // Network selection state
   const [selectedNetwork, setSelectedNetwork] = useState<{ id: string; name: string; icon?: string } | undefined>({
@@ -116,6 +118,13 @@ export const TradingBoxPrimitive = ({
   const hasPay = Number.isFinite(parsedPay) && parsedPay > 0;
   const parsedLimit = parseFloat(limitPrice || '0');
   const hasLimitPrice = Number.isFinite(parsedLimit) && parsedLimit > 0;
+  const parsedTpslClose = parseFloat(tpslClosePrice || '0');
+  const parsedTpslTrigger = parseFloat(tpslTriggerPrice || '0');
+  const hasTpsl =
+    Number.isFinite(parsedTpslClose) &&
+    parsedTpslClose > 0 &&
+    Number.isFinite(parsedTpslTrigger) &&
+    parsedTpslTrigger > 0;
   const longAmount = hasPay ? (parsedPay * effectiveLeverage).toFixed(2) : '';
 
   const handleSelectToken = (token: Token) => {
@@ -146,6 +155,14 @@ export const TradingBoxPrimitive = ({
 
   const showLeverage = !isSwap && orderType !== 'TPSL';
   const showTPSLSection = !isSwap && orderType !== 'TPSL';
+  const orderTypeLabel =
+    orderType === 'TPSL'
+      ? 'TP/SL'
+      : orderType === 'StopMarket'
+      ? 'Stop Market'
+      : orderType;
+  // TP/SL still executes at market, so keep this summary label aligned with the spec.
+  const orderSummaryLabel = orderType === 'TPSL' ? 'Market' : orderTypeLabel;
   const dragProps = isMobileSheet
     ? {
         drag: 'y' as const,
@@ -235,7 +252,9 @@ export const TradingBoxPrimitive = ({
   );
 
   const renderPrimaryAction = (className?: string) => {
-    const isDisabled = !hasPay || (orderType === 'Limit' && !hasLimitPrice);
+    const isDisabled =
+      (orderType === 'TPSL' && !isSwap ? !hasTpsl : !hasPay) ||
+      (orderType === 'Limit' && !hasLimitPrice);
 
     if (isWalletConnected) {
       return (
@@ -263,6 +282,48 @@ export const TradingBoxPrimitive = ({
       </button>
     );
   };
+
+  const renderTpslFields = () => (
+    <div className="flex flex-col gap-2">
+      {/* Close */}
+      <div className="rounded-lg border border-white/10 bg-[#15191e] p-3 transition-colors hover:bg-[#1a1d26]">
+        <div className="flex items-center justify-between text-xs text-gray-400">
+          <span>Close</span>
+        </div>
+        <div className="mt-2 flex items-center gap-3">
+          <input
+            type="text"
+            inputMode="decimal"
+            placeholder="0.0"
+            value={tpslClosePrice}
+            onChange={e => setTpslClosePrice(e.target.value)}
+            className="w-full min-w-0 bg-transparent text-2xl font-medium text-white placeholder-gray-600 outline-none"
+          />
+          <span className="text-sm text-gray-400">USD</span>
+        </div>
+        <div className="mt-1 text-xs text-gray-500">$0.00</div>
+      </div>
+
+      {/* Trigger Price */}
+      <div className="rounded-lg border border-white/10 bg-[#15191e] p-3 transition-colors hover:bg-[#1a1d26]">
+        <div className="flex items-center justify-between text-xs text-gray-400">
+          <span>Trigger Price</span>
+          <span className="text-[11px] text-gray-500">Mark: $209.773</span>
+        </div>
+        <div className="mt-2 flex items-center gap-3">
+          <input
+            type="text"
+            inputMode="decimal"
+            placeholder="0.0"
+            value={tpslTriggerPrice}
+            onChange={e => setTpslTriggerPrice(e.target.value)}
+            className="w-full min-w-0 bg-transparent text-2xl font-medium text-white placeholder-gray-600 outline-none"
+          />
+          <span className="text-sm text-gray-400">USD</span>
+        </div>
+      </div>
+    </div>
+  );
 
   const renderInputs = () => {
     if (isSwap) {
@@ -344,12 +405,7 @@ export const TradingBoxPrimitive = ({
 
     // Long / Short
     if (orderType === 'TPSL') {
-      return (
-        <div className="flex flex-col gap-2">
-          {renderSimplePriceInput('Close Price')}
-          {renderSimplePriceInput('Trigger Price')}
-        </div>
-      );
+      return renderTpslFields();
     }
 
     const payLabel = 'Pay';
@@ -393,7 +449,6 @@ export const TradingBoxPrimitive = ({
 
         {orderType === 'Limit' && renderLimitPriceInput()}
         {orderType === 'StopMarket' && renderSimplePriceInput('Stop Price')}
-        {orderType === 'TWAP' && renderTwapFields(false)}
       </div>
     );
   };
@@ -721,15 +776,15 @@ export const TradingBoxPrimitive = ({
               // Long/Short Footer Content (reordered)
               <div className="flex flex-col gap-3">
                 {/* Order summary above Pool */}
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">
-                    Market
-                  </span>
-                  <div className="flex items-center gap-1 text-white cursor-pointer">
-                    <span>BTC/USD</span>
-                    <ChevronDown className="h-4 w-4 text-gray-400" />
+                {orderType !== 'TWAP' && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">{orderSummaryLabel}</span>
+                    <div className="flex items-center gap-1 text-white cursor-pointer">
+                      <span>BTC/USD</span>
+                      <ChevronDown className="h-4 w-4 text-gray-400" />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* 1. Pool */}
                 <div className="flex items-baseline justify-between">
@@ -756,8 +811,11 @@ export const TradingBoxPrimitive = ({
                   </div>
                 </div>
 
+                {/* 2.5 TWAP schedule (for Long/Short TWAP) */}
+                {orderType === 'TWAP' && renderTwapFields(false)}
+
                 {/* 3. Take Profit / Stop Loss */}
-                {orderType !== 'TPSL' && (
+                {orderType !== 'TPSL' && orderType !== 'TWAP' && (
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <span className="text-[13px] font-medium text-gray-500">Take Profit / Stop Loss</span>
@@ -955,9 +1013,12 @@ export const TradingBoxPrimitive = ({
                 {/* 4. Action Button */}
                 {isWalletConnected ? (
                   <button
-                    disabled={!(hasPay && (orderType !== 'Limit' || hasLimitPrice))}
+                    disabled={
+                      !(orderType === 'TPSL' ? hasTpsl : hasPay) ||
+                      (orderType === 'Limit' && !hasLimitPrice)
+                    }
                     className={`w-full h-11 rounded-lg text-sm font-semibold transition-colors ${
-                      hasPay && (orderType !== 'Limit' || hasLimitPrice)
+                      (orderType === 'TPSL' ? hasTpsl : hasPay) && (orderType !== 'Limit' || hasLimitPrice)
                         ? 'bg-[#15F46F] text-[#06171E] hover:bg-[#12d160]'
                         : 'bg-white/5 text-gray-500 cursor-not-allowed'
                     }`}
@@ -975,75 +1036,188 @@ export const TradingBoxPrimitive = ({
 
                 {/* 5. Alerts (removed for cleaner flow) */}
 
-                {/* 6. Liquidation Price */}
-                <div className="flex items-baseline justify-between">
-                  <span className="text-gray-500">Liquidation Price</span>
-                  <span className="text-white">-</span>
-                </div>
-
-                {/* 7. Price Impact / Fees */}
-                <div className="flex items-baseline justify-between">
-                  <span className="border-b border-dashed border-gray-600/40 text-gray-500 cursor-help">
-                    Price Impact / Fees
-                  </span>
-                  <div className="text-right text-gray-500">
-                    <span className="text-white">0.000%</span> /{' '}
-                    <span className="text-white">0.000%</span>
-                  </div>
-                </div>
-
-                {/* 8. Execution Details */}
-                <div
-                  className="flex items-center justify-between cursor-pointer group py-1"
-                  onClick={() => setIsExecDetailsOpen(!isExecDetailsOpen)}
-                >
-                  <span className="text-gray-500 group-hover:text-[#00ff9d] transition-colors">
-                    Execution Details
-                  </span>
-                  <ChevronDown
-                    className={`h-4 w-4 text-gray-500 group-hover:text-[#00ff9d] transition-colors ${
-                      isExecDetailsOpen ? 'rotate-180' : ''
-                    }`}
-                  />
-                </div>
-
-                {isExecDetailsOpen && (
-                  <div className="flex flex-col gap-2.5 pl-0 animate-in fade-in slide-in-from-top-1 duration-200">
-                    {/* 8.1 Fees */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-500">Fees</span>
-                      <span className="text-white">&lt;$0.01</span>
+                {orderType === 'TPSL' ? (
+                  <>
+                    {/* PnL */}
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-gray-500">PnL</span>
+                      <span className="text-white">-</span>
                     </div>
 
-                    {/* 8.2 Network Fee with icon */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        <span className="text-gray-500">Network Fee</span>
-                        <Info className="h-3 w-3 text-gray-500" />
+                    {/* Net Price Impact / Fees */}
+                    <div className="flex items-baseline justify-between">
+                      <span className="border-b border-dashed border-gray-600/40 text-gray-500 cursor-help">
+                        Net Price Impact / Fees
+                      </span>
+                      <span className="text-white">-</span>
+                    </div>
+
+                    {/* Execution Details */}
+                    <div
+                      className="flex items-center justify-between cursor-pointer group py-1"
+                      onClick={() => setIsExecDetailsOpen(!isExecDetailsOpen)}
+                    >
+                      <span className="text-gray-500 group-hover:text-[#00ff9d] transition-colors">
+                        Execution Details
+                      </span>
+                      <ChevronDown
+                        className={`h-4 w-4 text-gray-500 group-hover:text-[#00ff9d] transition-colors ${
+                          isExecDetailsOpen ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </div>
+
+                    {isExecDetailsOpen && (
+                      <div className="flex flex-col gap-2.5 pl-0 animate-in fade-in slide-in-from-top-1 duration-200">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <span className="text-gray-500">Exit price</span>
+                            <Info className="h-3 w-3 text-gray-500" />
+                          </div>
+                          <span className="text-white">-</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-500">Fees</span>
+                          <span className="text-white">-</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <span className="text-gray-500">Network Fee</span>
+                            <Info className="h-3 w-3 text-gray-500" />
+                          </div>
+                          <span className="text-white">-</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-500">Stored Price Impact</span>
+                          <span className="text-white">-</span>
+                        </div>
                       </div>
-                      <span className="text-white">-$0.29</span>
-                    </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {orderType === 'TWAP' ? (
+                      <>
+                        {/* Execution Details (TWAP) */}
+                        <div
+                          className="flex items-center justify-between cursor-pointer group py-1"
+                          onClick={() => setIsExecDetailsOpen(!isExecDetailsOpen)}
+                        >
+                          <span className="text-gray-500 group-hover:text-[#00ff9d] transition-colors">
+                            Execution Details
+                          </span>
+                          <ChevronDown
+                            className={`h-4 w-4 text-gray-500 group-hover:text-[#00ff9d] transition-colors ${
+                              isExecDetailsOpen ? 'rotate-180' : ''
+                            }`}
+                          />
+                        </div>
 
-                    {/* 8.3 Collateral Spread */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-500">Collateral Spread</span>
-                      <span className="text-white">0.00%</span>
-                    </div>
+                        {isExecDetailsOpen && (
+                          <div className="flex flex-col gap-2.5 pl-0 animate-in fade-in slide-in-from-top-1 duration-200">
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-500">Fees</span>
+                              <span className="text-white">-</span>
+                            </div>
 
-                    {/* 8.4 Allowed Slippage with icon */}
-                    <div className="flex items-center justify-between pt-1">
-                      <div className="flex items-center gap-1">
-                        <span className="text-gray-500">Allowed Slippage</span>
-                        <Info className="h-3 w-3 text-gray-500" />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button className="rounded bg-white/5 px-2 py-0.5 text-xs text-gray-500 hover:text-white">
-                          -
-                        </button>
-                        <span className="text-white">1%</span>
-                      </div>
-                    </div>
-                  </div>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1">
+                                <span className="text-gray-500">Network Fee</span>
+                                <Info className="h-3 w-3 text-gray-500" />
+                              </div>
+                              <span className="text-white">-</span>
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-500">Acceptable Swap Impact</span>
+                              <span className="text-white">0.00%</span>
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-500">Available liquidity</span>
+                              <span className="text-white">-</span>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {/* Liquidation Price */}
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-gray-500">Liquidation Price</span>
+                          <span className="text-white">-</span>
+                        </div>
+
+                        {/* Price Impact / Fees */}
+                        <div className="flex items-baseline justify-between">
+                          <span className="border-b border-dashed border-gray-600/40 text-gray-500 cursor-help">
+                            Price Impact / Fees
+                          </span>
+                          <div className="text-right text-gray-500">
+                            <span className="text-white">0.000%</span> /{' '}
+                            <span className="text-white">0.000%</span>
+                          </div>
+                        </div>
+
+                        {/* Execution Details */}
+                        <div
+                          className="flex items-center justify-between cursor-pointer group py-1"
+                          onClick={() => setIsExecDetailsOpen(!isExecDetailsOpen)}
+                        >
+                          <span className="text-gray-500 group-hover:text-[#00ff9d] transition-colors">
+                            Execution Details
+                          </span>
+                          <ChevronDown
+                            className={`h-4 w-4 text-gray-500 group-hover:text-[#00ff9d] transition-colors ${
+                              isExecDetailsOpen ? 'rotate-180' : ''
+                            }`}
+                          />
+                        </div>
+
+                        {isExecDetailsOpen && (
+                          <div className="flex flex-col gap-2.5 pl-0 animate-in fade-in slide-in-from-top-1 duration-200">
+                            {/* 8.1 Fees */}
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-500">Fees</span>
+                              <span className="text-white">&lt;$0.01</span>
+                            </div>
+
+                            {/* 8.2 Network Fee with icon */}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1">
+                                <span className="text-gray-500">Network Fee</span>
+                                <Info className="h-3 w-3 text-gray-500" />
+                              </div>
+                              <span className="text-white">-$0.29</span>
+                            </div>
+
+                            {/* 8.3 Collateral Spread */}
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-500">Collateral Spread</span>
+                              <span className="text-white">0.00%</span>
+                            </div>
+
+                            {/* 8.4 Allowed Slippage with icon */}
+                            <div className="flex items-center justify-between pt-1">
+                              <div className="flex items-center gap-1">
+                                <span className="text-gray-500">Allowed Slippage</span>
+                                <Info className="h-3 w-3 text-gray-500" />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <button className="rounded bg-white/5 px-2 py-0.5 text-xs text-gray-500 hover:text-white">
+                                  -
+                                </button>
+                                <span className="text-white">1%</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </>
                 )}
               </div>
             )}
