@@ -20,9 +20,16 @@
     "framer-motion": ">=10",
     "lucide-react": ">=0.300"
   },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.3.1"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json"
   }
 }
+
+
+
 
 
