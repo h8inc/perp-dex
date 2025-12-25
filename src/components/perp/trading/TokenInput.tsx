@@ -14,6 +14,7 @@ type TokenInputProps = {
   token: Token;
   onTokenClick: () => void;
   subValue?: string;
+  subValuePlacement?: 'inline' | 'below';
   balance?: string;
   readOnly?: boolean;
   compact?: boolean;
@@ -26,6 +27,7 @@ export const TokenInput = ({
   token,
   onTokenClick,
   subValue,
+  subValuePlacement = 'inline',
   balance,
   readOnly = false,
   compact = false
@@ -52,7 +54,7 @@ export const TokenInput = ({
           className={`w-full min-w-0 bg-transparent ${inputSize} font-medium text-white placeholder-gray-600 outline-none`}
         />
         <div className="flex shrink-0 items-center gap-2">
-          {subValue && (
+          {subValue && subValuePlacement === 'inline' && (
             <div className="flex items-baseline gap-1 mr-2">
               <span className="text-xs text-gray-400">Leverage:</span>
               <span className="text-xs text-gray-400">{subValue}</span>
@@ -68,6 +70,12 @@ export const TokenInput = ({
           </button>
         </div>
       </div>
+      {subValue && subValuePlacement === 'below' && (
+        <div className="mt-2 flex justify-end text-xs text-gray-400">
+          <span className="mr-1">Leverage:</span>
+          <span>{subValue}</span>
+        </div>
+      )}
       <div className="mt-1 text-xs text-gray-500">$0.00</div>
     </div>
   );

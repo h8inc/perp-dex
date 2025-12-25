@@ -436,6 +436,7 @@ export const TradingBoxPrimitive = ({
               setIsTokenSelectorOpen(true);
             }}
             subValue={showLeverage ? `${clampedLeverage.toFixed(2)}x` : undefined}
+            subValuePlacement="below"
             readOnly
             compact
           />
