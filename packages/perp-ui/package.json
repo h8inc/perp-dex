@@ -1,0 +1,28 @@
+{
+  "name": "@h8inc/perp-ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "framer-motion": ">=10",
+    "lucide-react": ">=0.300"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  }
+}
+
+
