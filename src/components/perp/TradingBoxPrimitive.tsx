@@ -161,8 +161,7 @@ export const TradingBoxPrimitive = ({
       : orderType === 'StopMarket'
       ? 'Stop Market'
       : orderType;
-  // TP/SL still executes at market, so keep this summary label aligned with the spec.
-  const orderSummaryLabel = orderType === 'TPSL' ? 'Market' : orderTypeLabel;
+  // (Intentionally no footer-level "Market BTC/USD" summary row; spec calls it redundant.)
   const dragProps = isMobileSheet
     ? {
         drag: 'y' as const,
@@ -776,17 +775,6 @@ export const TradingBoxPrimitive = ({
             ) : (
               // Long/Short Footer Content (reordered)
               <div className="flex flex-col gap-3">
-                {/* Order summary above Pool */}
-                {orderType !== 'TWAP' && (
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">{orderSummaryLabel}</span>
-                    <div className="flex items-center gap-1 text-white cursor-pointer">
-                      <span>BTC/USD</span>
-                      <ChevronDown className="h-4 w-4 text-gray-400" />
-                    </div>
-                  </div>
-                )}
-
                 {/* 1. Pool */}
                 <div className="flex items-baseline justify-between">
                   <span className="text-gray-500">Pool</span>
@@ -1213,6 +1201,12 @@ export const TradingBoxPrimitive = ({
                                 </button>
                                 <span className="text-white">1%</span>
                               </div>
+                            </div>
+
+                            {/* 8.5 Stored Price Impact */}
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-500">Stored Price Impact</span>
+                              <span className="text-white">-</span>
                             </div>
                           </div>
                         )}

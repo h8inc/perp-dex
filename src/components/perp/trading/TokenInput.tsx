@@ -70,13 +70,17 @@ export const TokenInput = ({
           </button>
         </div>
       </div>
-      {subValue && subValuePlacement === 'below' && (
-        <div className="mt-2 flex justify-end text-xs text-gray-400">
-          <span className="mr-1">Leverage:</span>
-          <span>{subValue}</span>
+      {subValue && subValuePlacement === 'below' ? (
+        <div className="mt-2 flex items-center justify-between text-xs">
+          <span className="text-gray-500">$0.00</span>
+          <span className="text-gray-400">
+            <span className="mr-1">Leverage:</span>
+            <span>{subValue}</span>
+          </span>
         </div>
+      ) : (
+        <div className="mt-1 text-xs text-gray-500">$0.00</div>
       )}
-      <div className="mt-1 text-xs text-gray-500">$0.00</div>
     </div>
   );
 };
