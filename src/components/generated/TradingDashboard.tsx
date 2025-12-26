@@ -751,7 +751,7 @@ export const TradingDashboard = ({
                         </span>
                         {metric.explanationKey && METRIC_EXPLANATIONS[metric.explanationKey] && <MetricTooltip label={metric.label} explanation={METRIC_EXPLANATIONS[metric.explanationKey]} />}
                       </div>
-                      <div className="text-lg font-semibold text-white">
+                      <div className="text-lg font-normal text-[color:var(--border)]">
                         {getMetricValue(metric.id)}
                       </div>
                     </div>)}
