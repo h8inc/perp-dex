@@ -262,7 +262,7 @@ const MarketTicker = ({
         </div>
         
           <div className="flex flex-col min-w-fit">
-          <span className="text-lg font-bold text-white">90,528 USD</span>
+          <span className="text-lg font-medium text-white">90,528 USD</span>
           <span className="text-[#00ff9d] text-[10px]">$90,528</span>
         </div>
 
