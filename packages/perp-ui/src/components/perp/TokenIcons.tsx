@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 
-// Token logo URL mappings using reliable CDN sources
+// Token logo URL mappings using local /tokens/ assets
 const TOKEN_LOGO_URLS: Record<string, string> = {
-  BTC: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png',
-  WBTC: 'https://assets.coingecko.com/coins/images/7598/large/wrapped_bitcoin_wbtc.png',
-  ETH: 'https://token-icons.s3.amazonaws.com/eth.png',
-  WETH: 'https://assets.coingecko.com/coins/images/2518/large/weth.png',
-  USDC: 'https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png',
-  USDT: 'https://assets.coingecko.com/coins/images/325/large/Tether.png',
-  SOL: 'https://assets.coingecko.com/coins/images/4128/large/solana.png',
-  DAI: 'https://assets.coingecko.com/coins/images/9956/large/Badge_Dai.png',
-  MATIC: 'https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png',
+  BTC: '/tokens/btc.png',
+  WBTC: '/tokens/wbtc.png',
+  ETH: '/tokens/eth.png',
+  WETH: '/tokens/eth.png',
+  USDC: '/tokens/usdc.png',
+  USDT: '/tokens/usdt.png',
+  SOL: '/tokens/sol.png',
+  DAI: '/tokens/dai.png',
+  MATIC: '/tokens/matic.png',
 };
 
 // Token icon component with error handling

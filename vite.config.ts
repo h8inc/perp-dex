@@ -17,6 +17,7 @@ export default defineConfig({
         main: path.resolve(__dirname, 'index.html'),
         trading: path.resolve(__dirname, 'trading.html'),
         'landing-page-test': path.resolve(__dirname, 'landing-page-test.html'),
+        trade: path.resolve(__dirname, 'trade.html'),
       },
     },
   },
